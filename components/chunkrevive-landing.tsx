@@ -1,19 +1,13 @@
-import type { Metadata } from 'next';
 import { LandingPage } from '@/components/landing-page';
 
-export const metadata: Metadata = {
-  title: 'ChunkRevive',
-  description: '為 Paper 與 Folia 伺服器提供可控、可追蹤的區塊重生工作流程。',
-};
-
-export default function ChineseHomePage() {
+export function ChunkReviveLanding({ basePath = '' }: { basePath?: string }) {
   return (
     <LandingPage
       eyebrow="FreshChromatic"
       title="ChunkRevive"
       description="Minecraft 世界區塊重生與管理，為 Paper 與 Folia 伺服器提供可控、可追蹤的工作流程。"
-      primary={{ label: '開始閱讀', href: '/chunkrevive' }}
-      secondary={{ label: '快速工作流程', href: '/chunkrevive/guides' }}
+      primary={{ label: '開始閱讀', href: `${basePath}/chunkrevive` }}
+      secondary={{ label: '快速工作流程', href: `${basePath}/chunkrevive/guides` }}
       features={[
         {
           title: '精準重生',

@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
-import { Provider } from '@/components/provider';
-import './global.css';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
-export const metadata: Metadata = {
+export const siteMetadata: Metadata = {
   metadataBase: new URL('https://freshchromatic.github.io/docs/'),
   title: {
     default: 'FreshChromatic 文件',
@@ -35,13 +33,3 @@ export const metadata: Metadata = {
     images: ['https://freshchromatic.github.io/docs/og.png'],
   },
 };
-
-export default function Layout({ children }: LayoutProps<'/'>) {
-  return (
-    <html lang="zh-Hant" suppressHydrationWarning>
-      <body className="flex min-h-screen flex-col">
-        <Provider>{children}</Provider>
-      </body>
-    </html>
-  );
-}

@@ -1,27 +1,11 @@
-import { LandingPage } from '@/components/landing-page';
+import type { Metadata } from 'next';
+import { ChunkReviveLanding } from '@/components/chunkrevive-landing';
+
+export const metadata: Metadata = {
+  title: 'ChunkRevive',
+  description: '為 Paper 與 Folia 伺服器提供可控、可追蹤的區塊重生工作流程。',
+};
 
 export default function HomePage() {
-  return (
-    <LandingPage
-      eyebrow="FreshChromatic"
-      title="Documentation"
-      description="Fast, flexible documentation powered by Fumadocs."
-      primary={{ label: 'Get Started', href: '/chunkrevive' }}
-      secondary={{ label: 'Browse Guides', href: '/chunkrevive/guides' }}
-      features={[
-        {
-          title: 'Markdown First',
-          description: 'Write and maintain content directly in Markdown or MDX.',
-        },
-        {
-          title: 'Fast Development',
-          description: 'Preview every change instantly with the Next.js development server.',
-        },
-        {
-          title: 'Built for Navigation',
-          description: 'Search, sidebars, page outlines, and dark mode work out of the box.',
-        },
-      ]}
-    />
-  );
+  return <ChunkReviveLanding basePath="/zh_tw" />;
 }
