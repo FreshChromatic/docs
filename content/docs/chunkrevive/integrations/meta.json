@@ -1,0 +1,5 @@
+{
+  "title": "整合",
+  "icon": "Plug",
+  "pages": ["residence", "packetevents"]
+}

@@ -1,0 +1,39 @@
+---
+title: 正式環境操作清單
+description: 在正式世界執行批次重生、重置或刪除前後逐項確認。
+---
+
+## 維護前
+
+- [ ] 已備份世界、ChunkRevive 設定和資料庫。
+- [ ] 已記錄 Minecraft、Paper、Java、datapacks、generator 與外掛版本。
+- [ ] 同一流程已在世界副本驗證。
+- [ ] `worlds.mode` 和 `worlds.list` 只允許預期世界。
+- [ ] Residence 與結構保護已載入。
+- [ ] `/cr status` 顯示沒有其他工作。
+- [ ] 已選擇 Regen、Reset、Delete 或 Prune，並理解重新生成時機。
+- [ ] 玩家已離開目標世界或範圍。
+
+## 確認前
+
+- [ ] 世界名稱正確。
+- [ ] `x/z`、`cx/cz`、`rx/rz` 單位正確。
+- [ ] `/cr mark list` 中沒有多餘目標。
+- [ ] 計畫顯示的區塊、結構與 Region 數量合理。
+- [ ] 排除的 Residence 與結構符合預期。
+- [ ] 有足夠時間監看工作，不會提交後立即無人管理。
+
+## 執行中
+
+- [ ] 使用 `/cr status` 查看進度和等待原因。
+- [ ] 監看 TPS、Folia region tick、Heap、CPU、I/O 與伺服器日誌。
+- [ ] 不同時啟動大型掃描與 Regen。
+- [ ] 不反覆提交相同 Delete/Prune 工作。
+
+## 完成後
+
+- [ ] 狀態頁沒有失敗或遺留工作。
+- [ ] 驗證目標和相鄰區塊邊界。
+- [ ] 驗證結構、生態域、實體、領地與玩家安全。
+- [ ] Delete/Prune 後測試一個區塊的日後載入與原生生成。
+- [ ] 保留操作紀錄及備份，直到結果確認完成。

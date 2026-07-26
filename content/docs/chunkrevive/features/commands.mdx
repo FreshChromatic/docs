@@ -1,0 +1,117 @@
+---
+title: 指令與權限
+description: ChunkRevive 的完整命令語法、執行者限制、確認方式與權限。
+---
+
+主要命令為 `/cr`。`<參數>` 必填，`[參數]` 選填，`A|B` 表示擇一。玩家限定命令不能由主控台執行。
+
+## 權限
+
+| 權限 | 預設 | 命令範圍 | 建議授權 |
+| --- | --- | --- | --- |
+| `chunkrevive.admin` | OP | `/cr` 管理、標記、掃描、重生、重置、刪除、修剪、調校及管理型結構命令 | 只授予受信任管理員或受控自動化帳號 |
+| `chunkrevive.keep` | 所有人 | `/cr struct`、`check`、`list`、`/keep`、`/keepchunk`、`/chunkkeep` | 可供一般玩家查詢附近結構保護進度 |
+
+## 說明與狀態
+
+| 語法 | 執行者 | 權限 | 說明 |
+| --- | --- | --- | --- |
+| `/cr` | 任意 | admin | 顯示命令索引。 |
+| `/cr help [query]` | 任意 | admin | 搜尋遊戲內命令說明。 |
+| `/cr status [page]` | 任意 | admin | 顯示 Regen、掃描、刪除及伺服器工作狀態。 |
+| `/cr server` | 任意 | admin | 顯示硬體、JVM、版本和資料庫狀態。 |
+| `/cr server regions [world]` | 任意 | admin | 統計指定或目前世界的 Region。主控台省略世界時依訊息要求補上。 |
+| `/cr cancel` | 任意 | admin | 取消可取消的重生、掃描或等待刪除工作。 |
+| `/cr reload` | 任意 | admin | 重新載入設定與訊息。 |
+
+## 標記
+
+| 語法 | 執行者 | 確認 | 說明 |
+| --- | --- | --- | --- |
+| `/cr mark here` | 玩家 | 否 | 標記目前區塊。 |
+| `/cr mark here biome` | 玩家 | 視目標 | 偵測並標記目前連續生態域的既有區塊。 |
+| `/cr mark chunk <world> <cx> <cz>` | 任意 | 否 | 標記指定區塊座標。 |
+| `/cr mark follow` | 玩家 | 否 | 切換移動時自動標記。 |
+| `/cr mark list [page]` | 任意 | 否 | 列出手動標記。 |
+| `/cr mark resetmark <world> [--confirm]` | 任意 | 是 | 清除世界中的標記。 |
+| `/cr mark fullmark <world\|all> [--confirm]` | 任意 | 視掃描計畫 | 掃描並標記符合 persisted status 的既有區塊。 |
+| `/cr mark radius <world> <radius> [x] [z]` | 任意 | 否 | 以方塊座標中心，在區塊半徑內標記既有區塊。 |
+| `/cr mark biomefull <world> <biomeIds> [--confirm]` | 任意 | 視掃描計畫 | 掃描世界中的指定生態域。 |
+| `/cr mark biomeradius <world> <biomeIds> <radius> [x] [z]` | 任意 | 否 | 在範圍內標記指定生態域。 |
+
+以上均需要 `chunkrevive.admin`。
+
+## 取消標記
+
+| 語法 | 執行者 | 說明 |
+| --- | --- | --- |
+| `/cr unmark here` | 玩家 | 取消目前區塊。 |
+| `/cr unmark chunk <world> <cx> <cz>` | 任意 | 取消指定區塊。 |
+| `/cr unmark follow` | 玩家 | 切換移動時自動取消標記。 |
+
+## Regen
+
+| 語法 | 執行者 | 確認 | 說明 |
+| --- | --- | --- | --- |
+| `/cr regen here` | 玩家 | 否 | 立即重生目前區塊。 |
+| `/cr regen here struct [--confirm]` | 玩家 | 視數量 | 重生目前區塊所屬的完整結構群組。 |
+| `/cr regen here biome [--confirm]` | 玩家 | 視數量 | 偵測並重生目前連續生態域。 |
+| `/cr regen chunk <world> <cx> <cz>` | 任意 | 否 | 立即重生指定區塊。 |
+| `/cr regen all chunks\|structures\|all [--confirm]` | 任意 | 超過門檻時 | 批次重生一般標記、結構或兩者。 |
+
+## Reset
+
+| 語法 | 執行者 | 確認 | 說明 |
+| --- | --- | --- | --- |
+| `/cr reset here [--confirm]` | 玩家 | 是 | 依 `reset-strategy` 處理目前區塊。 |
+| `/cr reset chunk <world> <cx> <cz> [--confirm]` | 任意 | 是 | 依策略處理指定區塊。 |
+| `/cr reset all chunks\|structures\|all [--confirm]` | 任意 | 是 | 規劃並處理批次目標。 |
+
+## Delete
+
+| 語法 | 執行者 | 確認 | 說明 |
+| --- | --- | --- | --- |
+| `/cr delete chunk here` | 玩家 | 依單點流程 | 排程刪除目前區塊。 |
+| `/cr delete chunk <world> <cx> <cz>` | 任意 | 依單點流程 | 排程刪除指定區塊。 |
+| `/cr delete chunk all [--confirm]` | 任意 | 是 | 排程刪除所有一般標記。 |
+| `/cr delete here [chunk]` | 玩家 | 依單點流程 | 排程刪除目前區塊。 |
+| `/cr delete here struct [--confirm]` | 玩家 | 是 | 刪除目前所在的已標記結構範圍。 |
+| `/cr delete here biome [--confirm]` | 玩家 | 是 | 刪除目前連續生態域中的既有完整區塊。 |
+| `/cr delete marked [world] [--confirm]` | 任意 | 是 | 刪除所有世界或指定世界的 ChunkRevive 標記。 |
+
+## Prune
+
+| 語法 | 執行者 | 確認 | 說明 |
+| --- | --- | --- | --- |
+| `/cr prune empty <world> [--confirm]` | 任意 | 是 | 掃描並縮小索引已空白的 Region files。 |
+| `/cr prune region here [--confirm]` | 玩家 | 是 | 清理目前所在的 32×32 Region。 |
+| `/cr prune region <world> <rx> <rz> [--confirm]` | 任意 | 是 | 依 Region 座標清理。 |
+| `/cr prune region chunk <world> <cx> <cz> [--confirm]` | 任意 | 是 | 依區塊座標選擇所屬 Region。 |
+| `/cr prune region all [--confirm]` | 任意 | 是 | 清理所有完整標記且通過保護檢查的 Region。 |
+
+## 結構
+
+`/cr structure` 是 `/cr struct` 的別名。
+
+| 語法 | 執行者 | 權限 | 說明 |
+| --- | --- | --- | --- |
+| `/cr struct` | 任意 | keep | 顯示結構命令。 |
+| `/cr struct check` | 玩家 | keep | 檢查附近結構保護狀態。 |
+| `/cr struct list [page]` | 任意 | keep | 列出已偵測群組。 |
+| `/cr struct regen <groupId>` | 任意 | admin | 強制刷新群組。 |
+| `/cr struct block <groupId>` | 任意 | admin | 手動鎖定群組。 |
+| `/cr struct unblock <groupId>` | 任意 | admin | 解除鎖定。 |
+| `/cr struct reset <groupId>` | 任意 | admin | 重設保護狀態與計時器。 |
+| `/cr struct resetall [--confirm]` | 任意 | admin | 重設所有群組狀態與計時器。 |
+
+## 調校
+
+| 語法 | 說明 |
+| --- | --- |
+| `/cr tune` | 顯示硬體快照與模式入口。 |
+| `/cr tune preview <optimized\|balanced\|performance>` | 預覽模式的設定差異。 |
+| `/cr tune apply <profile> [--confirm]` | 備份並寫入設定；必須在 Regen/掃描閒置時套用。 |
+
+## 玩家查詢別名
+
+`/keep`、`/keepchunk`、`/chunkkeep` 需要 `chunkrevive.keep`，只查詢附近結構的保護進度，不會直接標記、鎖定或取消標記區塊。

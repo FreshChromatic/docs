@@ -1,0 +1,38 @@
+---
+title: Residence
+description: 讓 ChunkRevive 在選取、重生與刪除時避開受領地保護的區塊。
+---
+
+## 用途
+
+ChunkRevive 會在下列階段檢查領地：
+
+- 手動或批次標記。
+- Region 掃描和生態域選取。
+- Regen 與 Reset 計畫。
+- Delete/Prune 真正送入 Region I/O 前。
+
+新的領地、擴張或子區域生效後，外掛會移除其範圍內尚未處理的標記或佇列目標。
+
+## 掃描檢查
+
+```yaml
+scan:
+  check-residence-claims: true
+```
+
+關閉此項只影響掃描時是否套用領地政策。Delete/Prune 的最終檢查不應被視為由此開關停用。
+
+## 結構部分重疊
+
+```yaml
+structure:
+  residence:
+    on-partial-claim: EXCLUDE_CLAIMED
+```
+
+| 值 | 行為 |
+| --- | --- |
+| `EXCLUDE_CLAIMED` | 排除領地涵蓋部分。 |
+| `ABORT_WHOLE` | 任一重疊即中止整個結構工作。 |
+| `IGNORE_CLAIMS` | 忽略部分重疊政策。 |

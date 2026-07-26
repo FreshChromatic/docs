@@ -1,0 +1,42 @@
+---
+title: 區塊、範圍、生態域與結構
+description: 了解 ChunkRevive 的目標選取方式與座標單位。
+---
+
+ChunkRevive 先建立「目標集合」，再對集合執行重生、重置或刪除。標記不等於立即修改地形。
+
+## 選取方式
+
+| 方式 | 適合用途 | 主要命令 |
+| --- | --- | --- |
+| 目前區塊 | 單點測試 | `/cr mark here` |
+| 指定區塊座標 | 自動化或遠端目標 | `/cr mark chunk <world> <cx> <cz>` |
+| 移動跟隨 | 玩家沿路人工選取 | `/cr mark follow` |
+| 半徑 | 以中心選取既有區塊 | `/cr mark radius ...` |
+| 完整世界掃描 | 選取世界或所有世界中符合狀態的既有區塊 | `/cr mark fullmark ...` |
+| 生態域 | 依 biome ID 或目前連續生態域選取 | `/cr mark biomefull`、`biomeradius`、`here biome` |
+| 結構 | 將偵測到的完整結構群組作為一個保護與處理單位 | `/cr struct ...` |
+
+## 三種座標
+
+| 參數 | 單位 |
+| --- | --- |
+| `x`、`z` | 方塊座標 |
+| `cx`、`cz` | 區塊座標 |
+| `rx`、`rz` | Anvil Region 座標 |
+
+一個區塊是 16×16 方塊；一個 Anvil Region 是 32×32 區塊，共 1024 個位置。
+
+## 「既有區塊」
+
+磁碟掃描會依 `scan.min-persisted-status` 判斷哪些區塊已完整寫入。預設 `FULL` 可避免把尚未完整生成的中間狀態當成可處理目標。
+
+## 完整 Region
+
+Prune 不會因「大約選滿」而啟用。Reset planner 需要：
+
+- 恰好涵蓋同一 Region 的 1024 個位置。
+- 沒有重複或遺漏。
+- 沒有 Residence 或受保護結構阻擋。
+
+未通過時，策略改用 Delete Chunk 或 Regen，不會截短整個 Region。

@@ -1,0 +1,61 @@
+---
+title: Regen、Reset、Delete 與 Prune
+description: 四種世界維護操作的職責、適用場景與預設選擇原則。
+---
+
+四個名稱描述不同層級的工作。`Reset` 是策略入口；另外三個是實際處理方法。
+
+| 操作 | 負責的工作 | 適用場景 |
+| --- | --- | --- |
+| **Regen** | ChunkRevive 立即建立 ProtoChunk、執行世界生成、寫回 NBT；目標已載入時還會更新方塊、生態域、實體、光照與鄰居 | 必須立即看到新結果，不能等待區塊卸載及日後載入 |
+| **Reset** | 依 `reset-strategy`、目標形狀與保護檢查，規劃成 Regen、Delete 或 Prune | 批次目標同時包含零散區塊與完整 Region，希望由外掛自動選擇 |
+| **Delete** | 等待區塊保持 cold，移除 terrain、entity、POI；下次載入時由伺服器原生生成 | 零散或不完整 Region，可接受日後按需生成 |
+| **Prune** | 清理完整 32×32 Region 的 1024 個區塊，驗證為空後截短 Region files | 完整、安全的 Region，並希望回收實際磁碟空間 |
+
+## 預設選擇
+
+```text
+完整且安全的 Region → Prune
+不完整或零散的範圍 → Delete
+必須立即在線更新 → Regen
+希望由設定自動決定 → Reset
+```
+
+對應預設設定：
+
+```yaml
+reset-strategy:
+  default-method: DELETE_CHUNK
+  eligible-region-method: DELETE_REGION
+  incomplete-region-method: DEFAULT
+```
+
+## 為什麼預設推薦 Delete 與 Prune
+
+Delete/Prune 負責安全移除舊資料，再把重新生成交回伺服器。Regen 則需要 ChunkRevive 透過版本專用 NMS 立即重演世界生成、序列化、寫盤和 live chunk 更新。
+
+因此，大量且可以等待卸載的目標通常優先使用 Delete/Prune：
+
+1. 不需要建立完整 ProtoChunk 圖和生成 halo，通常使用較少 CPU 與 JVM Heap。
+2. 刪除工作會等待玩家離開、檢查 ChunkHolder，並要求目標連續保持 cold。
+3. 新地形由伺服器正常的「未生成 chunk」流程建立，較容易與目前生成器保持一致。
+4. 不必在線移除/重建實體、複製方塊與 biome、重算光照或觸發鄰居更新。
+5. Delete 釋放 `.mca` 內可重用 sectors；完整 Region 經 Prune 後可截短至 8 KiB header。
+6. Region I/O 的版本耦合範圍小於完整 worldgen context、structure metadata 與 blending 模擬。
+
+## 需要知道的限制
+
+- Delete 通常不會立即縮短 `.mca`；它先釋放檔案內可重用空間。
+- Prune 只適用於完整且通過 Residence、結構等檢查的 Region。
+- 版本、datapacks、生成設定或 generator 改變後，新地形不一定與歷史地形相同。
+- Regen 不是次等方案；它負責 Delete/Prune 無法提供的「立即在線更新」。
+
+<Callout type="info" title="相同 seed 不代表永遠得到歷史舊地形">
+  Delete/Prune 後使用的是目前伺服器的生成規則。升級或更換生成內容後，產生的是目前規則下該座標應有的地形。
+</Callout>
+
+## 下一步
+
+- 自動套用預設選擇：[依策略重置世界資料](../guides/reset-world-data)
+- 零散或完整 Region 清理：[刪除區塊與修剪 Region](../guides/delete-and-prune)
+- 必須立即更新：[重生單一或批次區塊](../guides/regenerate-chunks)

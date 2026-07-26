@@ -17,9 +17,16 @@ dist-ssr
 .env.*
 !.env.example
 
-# VitePress generated files
-.vitepress/cache/
-.vitepress/dist/
+# Fumadocs and Next.js generated files
+.source/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Local reference repositories and scratch directories
+fumadocs/
+aaaaaaaaaaa/
 
 # Editor directories and files
 .vscode/*

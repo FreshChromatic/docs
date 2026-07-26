@@ -1,0 +1,55 @@
+---
+title: 依策略重置世界資料
+description: 使用 Reset 依目標形狀自動選擇 Regen、Delete 或 Prune。
+---
+
+Reset 是策略入口，不是第四種底層刪除格式。它會先建立計畫，再依 `reset-strategy` 選擇實際方法。
+
+<Callout type="warn" title="先閱讀計畫再確認">
+  預設 Reset 可能建立 Delete Chunk 或 Prune 工作。先執行不含 `--confirm` 的命令，確認遊戲內顯示的 Region、區塊和 Regen 數量。
+</Callout>
+
+## 單一目標
+
+```text
+/cr reset here
+/cr reset chunk <world> <cx> <cz>
+```
+
+檢查計畫後依提示確認。
+
+## 批次目標
+
+```text
+/cr reset all chunks
+/cr reset all structures
+/cr reset all all
+```
+
+- `chunks`：手動標記的一般區塊。
+- `structures`：已標記的結構群組。
+- `all`：兩者。
+
+## 預設策略
+
+```yaml
+reset-strategy:
+  default-method: DELETE_CHUNK
+  eligible-region-method: DELETE_REGION
+  incomplete-region-method: DEFAULT
+```
+
+完整、安全 Region 使用 Prune；零散或不完整目標繼承 `default-method`，預設使用 Delete Chunk。
+
+## 不希望刪除資料
+
+若 Reset 只能使用 Regen：
+
+```yaml
+reset-strategy:
+  default-method: REGENERATE
+  eligible-region-method: REGENERATE
+  incomplete-region-method: DEFAULT
+```
+
+修改後在沒有進行中工作時重新載入，並先在副本驗證計畫。

@@ -1,0 +1,39 @@
+---
+title: 重生佇列與空間批次
+description: Regen 如何建立生成上下文、控制記憶體並更新已載入區塊。
+---
+
+Regen 不是簡單呼叫官方 `regenerateChunk` API。ChunkRevive 需要以版本專用 NMS 組合可在線執行的世界生成流程。
+
+## 生成階段
+
+典型流程包含：
+
+```text
+STRUCTURE_STARTS → STRUCTURE_REFERENCES → BIOMES
+→ NOISE → SURFACE → CARVERS → FEATURES
+→ 序列化及寫盤 → live apply
+```
+
+跨區塊的洞穴、樹木、礦脈和結構需要周圍上下文，因此每個目標集合還會建立 feature、carver、structure 及 blending 所需的 halo。
+
+## 為什麼要切成 work tiles
+
+ProtoChunk、palette 和周圍上下文會一直保留到寫盤完成。`regen.work-tile-size` 限制單一空間工作圖持有的目標數量，避免大型連續範圍耗盡 Heap。
+
+## 記憶體水位
+
+`regen.memory-safety` 可限制：
+
+- 同時活躍批次。
+- 每批區塊數。
+- 生成執行緒。
+- Heap 高水位。
+
+到達高水位時，佇列會暫停派發新工作，既有工作繼續完成。
+
+## Live apply
+
+如果區塊已載入，Regen 寫盤後仍要同步新結果，包括實體、BlockEntity、方塊、生態域、heightmap、光照、fluid ticks、邊界鄰居更新及客戶端刷新。`regen.apply-batch-size` 控制每 tick 套用量。
+
+這就是 Regen 適合「需要立即更新」，但大量可延後目標預設更適合 Delete/Prune 的原因。

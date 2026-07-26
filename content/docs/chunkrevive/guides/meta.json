@@ -1,0 +1,6 @@
+{
+  "title": "操作指南",
+  "icon": "ListChecks",
+  "defaultOpen": true,
+  "pages": ["index", "mark-chunks", "regenerate-chunks", "regenerate-biome", "protect-structures", "reset-world-data", "delete-and-prune", "monitor-and-cancel", "tune-performance", "production-checklist"]
+}

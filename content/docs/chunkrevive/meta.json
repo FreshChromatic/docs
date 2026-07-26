@@ -1,0 +1,14 @@
+{
+  "title": "ChunkRevive",
+  "description": "區塊重生、重置與世界清理",
+  "icon": "RotateCcw",
+  "root": true,
+  "pages": [
+    "index",
+    "features",
+    "guides",
+    "concepts",
+    "configuration",
+    "integrations"
+  ]
+}

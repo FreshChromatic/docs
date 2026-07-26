@@ -1,0 +1,45 @@
+---
+title: 世界、領地與操作安全
+description: ChunkRevive 在建立及執行工作前使用的限制與保護檢查。
+---
+
+安全不是單一確認按鈕，而是多層條件共同作用。
+
+## 世界存取政策
+
+`worlds.mode` 和 `worlds.list` 決定哪些世界可操作；`worlds.scope` 再分別限制手動標記、批次標記、結構偵測、結構刷新與重生。
+
+正式環境建議：
+
+```yaml
+worlds:
+  mode: WHITELIST
+  list:
+    - resource_world
+```
+
+## 二次確認
+
+批次重生、Reset、Delete、Prune 和大量清除會先顯示計畫，再要求在 `safety.confirm-timeout-seconds` 內執行含 `--confirm` 的命令。確認綁定目前計畫，不應把舊確認命令保存成日常腳本。
+
+## Residence
+
+安裝 Residence 後，ChunkRevive 會排除受領地保護的目標。刪除工作在等待期間可能出現新領地，因此真正送入 Region I/O 前會再次檢查。
+
+## 結構保護
+
+ChunkRevive 會追蹤結構群組和保護狀態。完整 Region 只要包含受保護結構，就不能被當成安全 Prune 目標。
+
+## 玩家與 ChunkHolder
+
+Delete/Prune 不會立即清除正在使用的區塊。工作會：
+
+1. 使用玩家安全距離擴大檢查範圍。
+2. 確認附近沒有玩家。
+3. 確認 Moonrise ChunkHolder 不再持有目標。
+4. 連續兩次觀察目標保持 cold。
+5. 執行前再次檢查 holder 與 Residence。
+
+## 備份仍然必要
+
+這些檢查降低誤刪正在使用資料的可能性，但不提供復原功能。選錯世界、座標、標記集合或生成環境時，仍然只能從備份回復。

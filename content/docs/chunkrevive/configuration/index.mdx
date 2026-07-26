@@ -1,0 +1,281 @@
+---
+title: 配置
+description: 此頁面包含 ChunkRevive 的配置結構。
+---
+
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+## 資料結構
+
+<Files>
+  <Folder name="plugins" defaultOpen>
+    <Folder name="ChunkRevive" defaultOpen>
+      <File name="config.yml" />
+      <File name="chunkrevive.db" />
+      <File name="messages.yml" />
+    </Folder>
+  </Folder>
+</Files>
+
+| 檔案 | 介紹 |
+| --- | --- |
+| `config.yml` | 插件配置 |
+| `chunkrevive.db` | SQLite 的數據庫 |
+| `messages.yml` | 語言文件 |
+
+## 配置範例
+
+<Accordions type="single">
+  <Accordion title="config.yml" id="config-yml">
+
+```yaml
+# ChunkRevive 配置檔案
+# 版本：1.0.0
+
+database:
+    # 資料庫類型：sqlite 或 mysql
+    type: sqlite
+    sqlite:
+        file: chunkrevive.db
+    mysql:
+        host: localhost
+        port: 3306
+        database: chunkrevive
+        username: root
+        password: ''
+regen:
+    # 批次重生時，每個區塊之間等待的刻數（20 ticks = 1 秒）
+    batch-delay-ticks: 10
+    # 批次重生時可同時進行的區塊重生數量
+    batch-concurrency: 1
+    # 區塊重生完成後，是否自動取消其標記
+    auto-unmark-after-regen: true
+    # 邏輯相鄰群組的可選額外上限（0 = 不設額外上限）。
+    # 獨立的 work-tile-size 安全限制一律會套用。每個工作分塊都會重生
+    # 完整且確定性的特徵外圍範圍，因此跨越工作分塊邊界的樹木、礦物與結構裝飾
+    # 仍會保持連續，同時可逐步提交處理進度。
+    max-chunks-per-batch: 0
+    # 單個批量生成工作分塊可保留的目標區塊數量硬性上限。
+    # 與 max-chunks-per-batch 不同，此限制一律套用，包括結構／生態域群組，
+    # 即使 max-chunks-per-batch 為 0 亦然。它會限制暫存 ProtoChunk 圖的大小，但不會改變
+    # 周圍哪些特徵來源會被重生。建議：JVM 堆積記憶體為 4 GiB 時設為 128。
+    work-tile-size: 128
+    # 批量目標在拆分成有限大小的工作分塊前，依空間分組的方式。
+    # LOGICAL 會保留現有的結構／生態域／相鄰群組；MCA 會將所有目標
+    # 依其 32×32 Anvil 區域檔案座標重新分組後再拆分，以改善世界規模重生時的資料局部性。
+    # 地形外圍範圍仍可能跨越 MCA 邊界；此選項只會變更目標排程方式。
+    work-tile-mode: LOGICAL
+    # 平衡每個空間分組內的分區，而不是將每個工作分塊填滿至 work-tile-size，
+    # 並留下可能非常小的剩餘分區。例如，193 個目標且上限為 128 時，會拆成
+    # 97+96，而不是 128+65。稀疏的最後分組仍可能小於設定上限。
+    fixed-work-tile-size: false
+    # 用於形成工作分塊之固定空間網格的寬度與高度，單位為區塊。
+    # 空間分塊可讓每個上下文外圍範圍保持緊湊；4–8 GiB 堆積記憶體建議預設為 16。
+    # 當 work-tile-mode 為 MCA 時忽略；其跨度固定為 Anvil 區域的 32 個區塊寬度。
+    work-tile-span: 16
+    # 在重生區塊周圍載入的上下文半徑，單位為區塊。預設為 2。
+    # 降低此值（例如設為 2）可大幅減少磁碟讀取與 DFU 轉換負擔，
+    # 但可能導致重生範圍邊界附近的洞穴／峽谷略微被截斷。
+    # 請勿設為低於 2，因為部分結構（例如遠古城市）在特徵裝飾階段
+    # 至少需要半徑 2。
+    context-radius: 2
+    # 每個伺服器 tick 最多可執行多少個重生區塊的即時套用步驟（階段 2c：清除實體、將方塊複製到
+    # 已載入區塊、重新照明、觸發鄰近更新）。批次中的所有區塊幾乎會在同一時間
+    # 透過區域排程器排程，而 Folia 會在該區域下一個單一 tick 中處理
+    # 所有已排入該區域的工作。因此若沒有此限制，大型
+    # 結構重生（例如同一區域擁有的 240 個區塊）會將整個套用步驟集中到
+    # 單一 tick，造成該 tick 長時間停頓。較低的值會將負擔分散到
+    # 更多 ticks，但整體完成套用所需時間也會增加。
+    apply-batch-size: 8
+    thread-pool:
+        # 地形生成使用的平行度（同時執行的執行緒數量）。
+        # 支援的值：
+        #   - "AUTO"：自動設為（可用邏輯處理器數量 - 1），最低為 2。
+        #   - "MAX"：使用所有可用的邏輯處理器。
+        #   - "HALF"：使用一半可用的邏輯處理器，最低為 1。
+        #   - 自訂數字（例如 "4"、"8"）：指定 1 至 256 之間的固定執行緒數量。
+        # 預設為 "AUTO"。
+        parallelism: AUTO
+        # 地形生成執行緒的優先級。
+        # 可接受範圍為 1（最低優先級）至 10（最高優先級）。
+        # 預設為 5（NORM_PRIORITY）。修改此值可能影響伺服器 tick 效能。
+        priority: 5
+        # 是否將這些執行緒設為常駐執行緒（daemon threads）。
+        # 若為 true，伺服器停止時，這些執行緒不會阻止 JVM 結束。
+        # 強烈建議保持為 true。
+        daemon: true
+        # ForkJoinPool 的非同步排程模式。
+        # 若為 false，使用 LIFO（後進先出）佇列排程，適合遞迴式分治工作。
+        # 若為 true，使用 FIFO（先進先出）佇列排程，適合彼此獨立的佇列工作。
+        # 預設為 false。
+        async-mode: false
+    memory-safety:
+        # 啟用依 JVM 堆積記憶體狀況調整的批量重生限制。除非已使用更大的堆積記憶體進行效能分析，否則請保持啟用。
+        enabled: true
+        # 同時生成批次的硬性上限。支援：AUTO（依堆積記憶體計算上限）、CONFIG 或 IGNORE（直接使用 regen.batch-concurrency，不加額外安全限制），或正整數。舊版的 0 會視為 AUTO。
+        max-active-batches: AUTO
+        # 每個工作分塊的額外目標數量上限。支援：AUTO（依堆積記憶體計算上限）、CONFIG 或 IGNORE（跟隨 regen.max-chunks-per-batch），或正整數。獨立的 regen.work-tile-size 限制一律會套用。
+        max-chunks-per-batch: CONFIG
+        # 地形生成工作執行緒的硬性上限。支援：AUTO（依堆積記憶體／CPU 計算上限）、CONFIG 或 IGNORE（直接使用 regen.thread-pool.parallelism，不加額外安全限制），或正整數。舊版的 0 會視為 AUTO。
+        max-generation-threads: AUTO
+        # 當已使用的 JVM 堆積記憶體達到或超過 -Xmx 的此百分比時，不再啟動新批次；現有批次仍可完成。
+        heap-high-watermark-percent: 85
+reset-strategy:
+    # 各條件專用 DEFAULT 值所繼承的基礎方法。支援：REGENERATE、DELETE_CHUNK、DELETE_REGION。
+    default-method: DELETE_CHUNK
+    # 當某個 Anvil 區域的全部 1024 個區塊均被選取，且該區域沒有 Residence 領地或受保護結構時使用的方法。支援：DEFAULT、REGENERATE、DELETE_CHUNK、DELETE_REGION。
+    eligible-region-method: DELETE_REGION
+    # 用於無法形成安全完整區域的目標。支援：DEFAULT、REGENERATE、DELETE_CHUNK。此處絕不允許 DELETE_REGION，並會安全地回退至 REGENERATE。
+    incomplete-region-method: DEFAULT
+deletion:
+    # 檢查等待中的區塊刪除與區域修剪工作是否已成為冷目標的頻率。
+    check-interval-ticks: 20
+    # 每刪除此數量的區塊，將一般完成訊息合併成一則進度訊息。
+    progress-report-chunks: 10000
+    # 每修剪此數量的空區域，將完成訊息合併成一則進度訊息。
+    progress-report-regions: 100
+    # 每個刪除週期最多處理的不同 Anvil 區域數量。數值會限制在 1–64。
+    region-batches-per-cycle: 4
+    # 每個週期中，針對每個已選 Anvil 區域最多提交的區塊刪除數量。這是主要的刪除 I/O 節流設定；數值會限制在 1–1024。
+    chunks-per-region-batch: 256
+    # 保存刪除工作，並在伺服器重新啟動後繼續未完成的工作。
+    resume-on-startup: true
+    # 線上刪除區塊或修剪區域前，目標周圍額外需要保持未載入狀態的區塊數量。
+    player-safety-padding-chunks: 12
+    # 線上截斷後，強制將空白的 8 KiB 區域標頭寫入穩定儲存空間。較安全，但每個檔案會多一次 fsync。
+    force-region-file-to-disk: true
+    # 區塊刪除或區域修剪成功後，移除對應的 ChunkRevive 標記。
+    auto-unmark-after-delete: true
+display:
+    # 是否啟用已標記區塊的浮動 TextDisplay 標記。需要 PacketEvents。
+    enabled: true
+    # 玩家周圍顯示標記的半徑，單位為區塊
+    render-radius-chunks: 4
+    # 每位玩家可見標記數量的硬性上限（依距離排序）
+    max-visible-chunks: 20
+    # TextDisplay 相對於玩家視線高度的 Y 軸位置
+    y-offset-from-eye: 0.5
+    # 更新顯示位置前所需的最小 Y 軸差值（減少封包傳送）
+    y-update-threshold: 0.0
+    # 檢查 Y 軸位置更新的 tick 間隔
+    update-interval-ticks: 1
+structure:
+    # 結構偵測／刷新／保護子系統的總開關；設為 false 時不會進行掃描、排程或阻止操作
+    enabled: true
+    detect:
+        # 玩家行走時是否自動偵測並登記附近的結構
+        auto-detect-on-walk: true
+        # 玩家移動時偵測並標記新結構後，是否向玩家顯示訊息
+        notify-player-on-detect: false
+        # 偵測掃描半徑，單位為區塊；0 表示只檢查玩家目前所在區塊
+        scan-radius-chunks: 0
+    mark:
+        # 標記屬於某結構的區塊時，將標記擴展至整個結構的邊界框
+        expand-to-full-structure: true
+    refresh:
+        enabled: true
+        # WHITELIST：只追蹤 tracked-structures 中的結構，且每種結構可設定各自的刷新天數。BLACKLIST：追蹤列表以外的所有結構，並使用 default-interval-days
+        list-mode: WHITELIST
+        # BLACKLIST 模式下，所有未排除結構使用的刷新間隔（天）
+        default-interval-days: 7
+        # WHITELIST 模式：結構 ID -> 刷新天數。BLACKLIST 模式：排除清單（天數值不使用）
+        tracked-structures:
+            minecraft:trial_chambers: 10
+            minecraft:village: 7
+            minecraft:bastion_remnant: 14
+            minecraft:ancient_city: 14
+            minecraft:fortress: 14
+        # 排程器檢查已到期結構刷新的頻率（ticks）
+        check-interval-ticks: 6000
+    residence:
+        # 處理與結構範圍重疊之 Residence 領地的方法：EXCLUDE_CLAIMED、ABORT_WHOLE 或 IGNORE_CLAIMS
+        on-partial-claim: EXCLUDE_CLAIMED
+    protection:
+        # 玩家必須停留於其中才能累積保護時間的半徑（區塊）
+        radius-chunks: 3
+        # 結構被阻止刷新前所需的累計停留 ticks（預設 4 小時）
+        required-ticks: 288000
+        # 將累積保護 ticks 寫入資料庫的頻率
+        flush-interval-ticks: 200
+        # 離開半徑時，是否重設累積進度，而不是暫停累積
+        reset-on-leave: false
+    entity-exemptions:
+        keep-ridden: true
+        keep-leashed: true
+        keep-allay-attracted: true
+        keep-tamed-pets: true
+        tamed-pet-owner-radius: 32.0
+    regen:
+        # 重生屬於結構群組的區塊時，是否將整個群組作為單一批次重生
+        regen-full-structure-range: true
+worlds:
+    # WHITELIST：只允許 list 中的世界。BLACKLIST（預設）：允許列表以外的所有世界。
+    mode: BLACKLIST
+    # 此列表適用的世界名稱。預設空列表搭配 BLACKLIST 模式時不會改變任何行為（完全向下相容）。
+    list: []
+    scope:
+        # /cr mark、/cr unmark、跟隨模式
+        manual-mark: true
+        # /cr fullmark、/cr radiusmark
+        bulk-mark: true
+        # 玩家行走時的被動結構自動偵測
+        structure-auto-detect: true
+        # StructureRefreshScheduler 的週期性刷新
+        structure-refresh: true
+        # /cr regen、/cr regenallmark、/cr struct refresh
+        regen: true
+scan:
+    # 只有磁碟中持久化狀態達到或超過此值的區塊，才會在 fullmark／radiusmark 中視為「已存在」。
+    # 可選：NOISE、BIOMES、STRUCTURE_STARTS、STRUCTURE_REFERENCES、SURFACE、CARVERS、FEATURES、LIGHT、SPAWN、FULL。
+    min-persisted-status: FULL
+    # fullmark／radiusmark 是否套用與結構標記相同的 Residence 政策（structure.residence.on-partial-claim）
+    check-residence-claims: true
+    # /cr radiusmark 半徑的上限（區塊）；更大的範圍必須改用 /cr fullmark
+    radiusmark-max-radius-chunks: 512
+    # 磁碟掃描是否可與重生批次佇列同時執行（兩者都會大量使用 I/O）
+    allow-concurrent-with-regen: false
+    thread-pool:
+        # 每個區域工作都會直接開啟自己的區域檔案（繞過伺服器的單一
+        # 執行緒區塊 I/O 佇列），並且只解碼區塊 Status 標籤與已追蹤結構的
+        # 起始資料，而非完整區塊。這是真正的並行磁碟 I/O，因此請依可用核心數量調整，
+        # 傳統硬碟應設低一些，SSD／NVMe 則可設高一些。
+        parallelism: 4
+        priority: 3
+        daemon: true
+biome:
+    # /cr mark biomeradius／biomefull 的取樣策略：
+    #   CENTER    -> 只取樣區塊中央柱（1 次雜訊高度查詢，速度最快，預設）。
+    #   ANY_OF_16 -> 取樣全部 4×4 quart 柱，只要任一柱符合即視為區塊符合（成本為 16 倍，
+    #                可找出 CENTER 可能漏掉的生態域邊界區塊）。
+    match-mode: CENTER
+    # 取樣生態域時使用的 Heightmap.Types 表面：WORLD_SURFACE（預設）、OCEAN_FLOOR 或 MOTION_BLOCKING。
+    # 無論此設定為何，只存在於地下的生態域（例如 deep_dark、lush_caves）都不會被匹配。
+    heightmap-type: WORLD_SURFACE
+    # /cr mark biomeradius 半徑的上限（區塊）；更大的範圍必須改用 /cr mark biomefull。
+    # 此設定與 scan.radiusmark-max-radius-chunks 分開，因為生態域匹配會額外消耗實際 CPU，
+    # 除 radiusmark 原有的磁碟 I/O 成本外，每個區塊還需進行一次雜訊柱查詢。
+    biomeradius-max-radius-chunks: 512
+    regen:
+        # 當 /cr regen all 批次包含一段連續且符合生態域的區塊時，將整段
+        # 作為單一不可分割批次重生（忽略 regen.max-chunks-per-batch），處理方式與結構群組相同。
+        # 生態域範圍可能遠大於結構，因此若伺服器在批次執行期間崩潰，
+        # 此操作可能只能全部完成或全部失敗；設為 false 可改回一般的相鄰群組與上限批次方式。
+        regen-full-biome-range: true
+        # /cr mark|regen here biome 自動偵測生態域區域的安全上限（BiomeRegionService 的
+        # 泛洪填充通常會在真實生態域邊界或已生成地形邊緣停止，
+        # 但部分生態域天然極大或近乎無界，例如已完整探索的海洋或平原區域）。
+        # 當偵測區域達到此區塊數量時，泛洪填充會提前停止，且指令會
+        # 將結果回報為已截斷。
+        flood-fill-max-chunks: 4096
+safety:
+    # 待確認操作（fullmark／resetmark／regenallmark）的有效時間
+    confirm-timeout-seconds: 30
+    # 只有即將加入佇列的區塊數量超過此值時，/cr regenallmark 才需要確認
+    bulk-regen-confirm-threshold-chunks: 50
+# 是否顯示詳細的結構、地形生成與刪除診斷日誌
+enable-debug-logs: false
+```
+
+  </Accordion>
+</Accordions>

@@ -1,0 +1,48 @@
+---
+title: 重生單一或批次區塊
+description: 使用 Regen 立即產生並套用新的區塊資料。
+---
+
+Regen 適用於必須立即更新的目標。大量且可等待日後生成的範圍，先評估 [Delete/Prune](./delete-and-prune)。
+
+## 單一區塊
+
+```text
+/cr regen here
+/cr regen chunk <world> <cx> <cz>
+```
+
+先在世界副本測試同版本、同 datapacks 與同 generator 的結果。
+
+## 批次已標記目標
+
+```text
+/cr mark list
+/cr regen all chunks
+/cr regen all chunks --confirm
+```
+
+也可將目標限制為結構，或同時包含一般區塊和結構：
+
+```text
+/cr regen all structures
+/cr regen all all
+```
+
+先執行不含 `--confirm` 的命令取得計畫；只有遊戲內要求時才提交確認版本。
+
+## 執行期間
+
+```text
+/cr status
+/cr cancel
+```
+
+不要同時啟動大型掃描。若 TPS、Heap 或 I/O 出現壓力，先讓目前工作完成或取消，再閱讀[效能調校](./tune-performance)。
+
+## 驗證
+
+- 檢查目標與相鄰區塊邊界。
+- 檢查結構、洞穴、植被和生態域。
+- 檢查玩家、實體與 Residence 保護結果。
+- 檢查日誌是否出現 worldgen、序列化、光照或 apply 錯誤。

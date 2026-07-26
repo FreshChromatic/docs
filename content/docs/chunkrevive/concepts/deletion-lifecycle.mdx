@@ -1,0 +1,33 @@
+---
+title: 刪除工作生命週期
+description: Delete 與 Prune 如何等待安全時機、持久化及在重啟後恢復。
+---
+
+Delete/Prune 命令建立的是等待工作，不代表輸入命令後立刻修改 Region files。
+
+```text
+建立計畫
+→ 儲存工作
+→ 等待玩家離開
+→ ChunkHolder 檢查
+→ cold-check 1/2
+→ cold-check 2/2
+→ 再次檢查 Residence 與 holder
+→ Region I/O
+→ 完成並視設定取消標記
+```
+
+## 為什麼工作會停在「等待變冷」
+
+玩家、其他外掛、spawn chunks 或伺服器內部 holder 仍在使用目標。這是預期等待狀態，不應以強制載入或反覆提交相同 Delete 命令解決。
+
+## 重啟恢復
+
+`deletion.resume-on-startup: true` 時，未完成工作會保存到資料庫。重啟後重新進行 cold-check，而不是假設重啟前的安全狀態仍然成立。
+
+## Delete 與 Prune 的空間效果
+
+- Delete 清除個別 chunk，釋放 `.mca` 中可重用 sectors，檔案長度通常不立即改變。
+- Prune 清理完整 Region，驗證所有位置為空後將檔案截短至合法 8 KiB header。
+
+使用 `/cr status` 查看刪除工作；使用 `/cr cancel` 取消仍可取消的等待工作。

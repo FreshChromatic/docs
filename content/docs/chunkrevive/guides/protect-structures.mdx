@@ -1,0 +1,47 @@
+---
+title: 偵測、保護與刷新結構
+description: 使用結構群組避免批次維護切斷或覆蓋重要結構。
+---
+
+ChunkRevive 將偵測到的結構範圍記錄為群組。一般玩家可查詢，管理員可控制刷新與保護狀態。
+
+## 查詢附近結構
+
+```text
+/cr struct check
+/cr struct list [page]
+```
+
+也可使用 `/keep`、`/keepchunk` 或 `/chunkkeep` 查看附近結構的被動保護進度。這些命令不會直接建立永久保護或修改標記。
+
+## 管理結構群組
+
+```text
+/cr struct block <groupId>
+/cr struct unblock <groupId>
+/cr struct reset <groupId>
+/cr struct regen <groupId>
+```
+
+- `block`：手動鎖定群組。
+- `unblock`：解除保護狀態。
+- `reset`：重設保護狀態與刷新計時器。
+- `regen`：強制刷新指定群組。
+
+Residence 與結構範圍重疊時，強制刷新可能被拒絕。
+
+## 清除追蹤狀態
+
+```text
+/cr struct resetall
+/cr struct resetall --confirm
+```
+
+這會重設所有結構群組狀態與計時器，不應作為一般故障排除的第一步。
+
+## 設定重點
+
+- `structure.detect`：步行偵測、通知及掃描半徑。
+- `structure.refresh`：追蹤清單與刷新間隔。
+- `structure.protection`：保護半徑、所需 ticks 及離開後是否重設。
+- `structure.entity-exemptions`：重生時保留騎乘、拴繩、悅靈及馴服寵物的條件。
