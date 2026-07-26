@@ -1,0 +1,60 @@
+---
+title: 初次上手
+description: 此頁面將指導首次使用該插件的用戶
+---
+
+### 指令
+指令很多，但大多數常用的指令就這些：
+
+| 語法 | 說明 |
+| --- | --- |
+| `/cr reload` | 重新載入設定與訊息 |
+| `/cr mark` | 標記 Chunk 功能 |
+| `/cr unmark` | 取消標記 Chunk 功能 |
+| `/cr reset` | 在配置下處理的決策 |
+| `/cr regen` | 再生 Chunk 功能 |
+| `/cr delete` | 刪除 Chunk 功能 |
+| `/cr prune` | 刪除 Region 功能 |
+
+更多 mark，reset，regen，delete，prune 的指令請[查閲此處](../../features/commands)。
+
+### 重新生成你的第一個區塊
+選擇好區塊 (透過游戲内 `F3+G` 查看當前區塊邊界) 後，輸入以下指令：
+```text
+/cr reset here
+```
+然後遠離10多格區塊或退出伺服器並等待一段時間後，再次進入時就會發現你的區塊已經被重新生成了。
+
+同理，如果需要重新生成當前所在的結構或生態域則輸入以下指令：
+| 語法 | 說明 |
+| --- | --- |
+| `/cr reset here struct` | 重新生成當前所在的結構 |
+| `/cr reset here biome` | 重新生成當前所在的生態域 |
+
+### 標記你的第一個區塊
+選擇好區塊 (透過游戲内 `F3+G` 查看當前區塊邊界) 後，輸入以下指令即可：
+```text
+/cr mark here
+```
+如果需要標記結構或生態域則輸入以下指令：
+| 語法 | 說明 |
+| --- | --- |
+| `/cr mark here struct` | 標記當前所在的結構 |
+| `/cr mark here biome` | 標記當前所在的生態域 |
+
+<Callout type="info" title="小知識">
+  透過指令 `/cr mark follow` 開啟後，你路過的區塊都會自動被標記，不需要的時候再次輸入相同指令即可。
+
+  同理，`/cr unmark follow` 則你路過的區塊都會自動被取消標記。
+</Callout>
+
+### 重新生成所有世界（包括主世界，地獄，終界以及其他世界）
+首先你需要將所有區塊標記，輸入以下指令：
+```text
+/cr mark fullmark all
+```
+等到完成通知後，輸入以下指令：
+```text
+/cr reset all all
+```
+這樣你伺服器上的所有世界都將重新生成。

@@ -5,10 +5,6 @@ description: 清除零散區塊或完整 Anvil Region，讓伺服器日後按需
 
 Delete/Prune 會等待目標卸載及保持 cold，再修改 terrain、entity 和 POI 儲存。它們不會立即生成新地形。
 
-<Callout type="warn" title="刪除不可由 ChunkRevive 復原">
-  執行前備份世界。若版本、datapacks 或 generator 已改變，日後生成的地形可能不同於歷史舊地形。
-</Callout>
-
 ## Delete：零散或不完整範圍
 
 ```text
@@ -28,7 +24,7 @@ Delete/Prune 會等待目標卸載及保持 cold，再修改 terrain、entity �
 
 結構、生態域及大量標記工作會顯示計畫並要求確認。
 
-Delete 會釋放 `.mca` 內可重用 sectors，但檔案長度通常不立即縮小。
+Delete 會釋放 `.mca` 內可重用 sectors。
 
 ## Prune：完整 Anvil Region
 
@@ -41,7 +37,7 @@ Delete 會釋放 `.mca` 內可重用 sectors，但檔案長度通常不立即縮
 
 `region chunk` 使用區塊座標選擇其所屬 Region；直接指定 Region 時使用 `rx`、`rz`。
 
-只有完整 1024 個位置都可以移除、且沒有 Residence 或受保護結構時，才能安全截短整個 Region。
+只有完整 1024 個位置都可以移除、且沒有受保護結構時，才能安全截短整個 Region。
 
 ## 修剪已空 Region
 
@@ -50,11 +46,3 @@ Delete 會釋放 `.mca` 內可重用 sectors，但檔案長度通常不立即縮
 ```
 
 它會掃描索引已完全空白的 Region files，並在確認後縮小檔案。
-
-## 執行與驗證
-
-1. 先執行不含 `--confirm` 的命令查看計畫。
-2. 確認世界、座標單位、目標數量及排除結果。
-3. 依提示確認。
-4. 使用 `/cr status` 觀察「等待變冷」及進度。
-5. 工作完成後，讓一個測試區塊重新載入，驗證目前生成規則下的結果。

@@ -5,7 +5,7 @@ import {
   DocsPage,
   DocsTitle,
 } from 'fumadocs-ui/layouts/docs/page';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
@@ -16,6 +16,9 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
+  if (slug.length === 1 && slug[0] === 'chunkrevive') {
+    redirect('/zh_tw/chunkrevive/getting-started');
+  }
   const page = source.getPage(slug, 'zh_tw');
   if (!page) notFound();
 
@@ -37,13 +40,19 @@ export default async function Page({ params }: Props) {
 }
 
 export function generateStaticParams() {
-  return source.getPages('zh_tw').map((page) => ({
-    slug: page.slugs,
-  }));
+  return [
+    { slug: ['chunkrevive'] },
+    ...source.getPages('zh_tw').map((page) => ({
+      slug: page.slugs,
+    })),
+  ];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  if (slug.length === 1 && slug[0] === 'chunkrevive') {
+    return {};
+  }
   const page = source.getPage(slug, 'zh_tw');
   if (!page) notFound();
 

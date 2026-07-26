@@ -34,14 +34,3 @@ description: 建立並檢查要重生、重置或刪除的目標集合。
 ```
 
 `radius` 的 `x`、`z` 是方塊座標；省略時依命令執行者和實作提示決定中心。大量掃描可能要求 `--confirm`，且預設不與 Regen 同時執行。
-
-## 檢查及移除
-
-```text
-/cr mark list [page]
-/cr unmark here
-/cr unmark chunk <world> <cx> <cz>
-/cr mark resetmark <world>
-```
-
-清除整個世界的標記前會要求確認。開始批次操作前，至少用 `/cr mark list` 和 `/cr status` 檢查一次。
