@@ -1,13 +1,10 @@
 import { source } from '@/lib/source';
-import { createFromSource } from 'fumadocs-core/search/server';
+import { flexsearchFromSource } from 'fumadocs-core/search/flexsearch';
 
 export const revalidate = false;
 
-export const { staticGET: GET } = createFromSource(source, {
+export const { staticGET: GET } = flexsearchFromSource(source, {
   localeMap: {
-    // Orama has no Traditional Chinese stemmer. The generic English tokenizer
-    // still indexes the original terms without pretending the content is translated.
-    zh_tw: 'english',
-    en: 'english',
+    zh_tw: 'cjk',
   },
 });

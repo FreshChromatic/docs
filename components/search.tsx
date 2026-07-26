@@ -11,12 +11,14 @@ import {
   SearchDialogOverlay,
   type SharedProps,
 } from 'fumadocs-ui/components/dialog/search';
+import { useI18n } from 'fumadocs-ui/contexts/i18n';
 import { useDocsSearch } from 'fumadocs-core/search/client';
-import { oramaStaticClient } from 'fumadocs-core/search/client/orama-static';
+import { localizedFlexsearchClient } from '@/lib/flexsearch-client';
 
 export default function DefaultSearchDialog(props: SharedProps) {
+  const { locale } = useI18n();
   const { search, setSearch, query } = useDocsSearch({
-    client: oramaStaticClient(),
+    client: localizedFlexsearchClient(locale ?? 'zh_tw'),
   });
 
   return (
