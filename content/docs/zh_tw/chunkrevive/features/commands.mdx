@@ -1,23 +1,23 @@
 ---
 title: 指令與權限
-description: ChunkRevive 的完整命令語法、執行者限制、確認方式與權限。
+description: ChunkRevive 的完整指令語法、執行者限制、確認方式與權限。
 ---
 
-主要命令為 `/cr`。`<參數>` 必填，`[參數]` 選填，`A|B` 表示擇一。玩家限定命令不能由主控台執行。
+主要指令為 `/cr`。`<參數>` 必填，`[參數]` 選填，`A|B` 表示擇一。玩家限定指令不能由主控台執行。
 
 ## 權限
 
-| 權限 | 預設 | 命令範圍 | 建議授權 |
+| 權限 | 預設 | 指令範圍 | 建議授權 |
 | --- | --- | --- | --- |
-| `chunkrevive.admin` | OP | `/cr` 管理、標記、掃描、重生、重置、刪除、修剪、調校及管理型結構命令 | 只授予受信任管理員或受控自動化帳號 |
+| `chunkrevive.admin` | OP | `/cr` 管理、標記、掃描、重生、重置、刪除、修剪、調校及管理型結構指令 | 只授予受信任管理員或受控自動化帳號 |
 | `chunkrevive.keep` | 所有人 | `/cr struct`、`check`、`list`、`/keep`、`/keepchunk`、`/chunkkeep` | 可供一般玩家查詢附近結構保護進度 |
 
 ## 說明與狀態
 
 | 語法 | 執行者 | 權限 | 說明 |
 | --- | --- | --- | --- |
-| `/cr` | 任意 | admin | 顯示命令索引。 |
-| `/cr help [query]` | 任意 | admin | 搜尋遊戲內命令說明。 |
+| `/cr` | 任意 | admin | 顯示指令索引。 |
+| `/cr help [query]` | 任意 | admin | 搜尋遊戲內指令說明。 |
 | `/cr status [page]` | 任意 | admin | 顯示 Regen、掃描、刪除及伺服器工作狀態。 |
 | `/cr server` | 任意 | admin | 顯示硬體、JVM、版本和資料庫狀態。 |
 | `/cr server regions [world]` | 任意 | admin | 統計指定或目前世界的 Region。主控台省略世界時依訊息要求補上。 |
@@ -29,6 +29,7 @@ description: ChunkRevive 的完整命令語法、執行者限制、確認方式�
 | 語法 | 執行者 | 確認 | 說明 |
 | --- | --- | --- | --- |
 | `/cr mark here` | 玩家 | 否 | 標記目前區塊。 |
+| `/cr mark here struct` | 玩家 | 否 | 偵測玩家附近受追蹤的結構、登記結構群組，並標記其有效區塊。 |
 | `/cr mark here biome` | 玩家 | 視目標 | 偵測並標記目前連續生態域的既有區塊。 |
 | `/cr mark chunk <world> <cx> <cz>` | 任意 | 否 | 標記指定區塊座標。 |
 | `/cr mark follow` | 玩家 | 否 | 切換移動時自動標記。 |
@@ -64,6 +65,8 @@ description: ChunkRevive 的完整命令語法、執行者限制、確認方式�
 | 語法 | 執行者 | 確認 | 說明 |
 | --- | --- | --- | --- |
 | `/cr reset here [--confirm]` | 玩家 | 是 | 依 `reset-strategy` 處理目前區塊。 |
+| `/cr reset here struct [--confirm]` | 玩家 | 視重置計畫 | 依 `reset-strategy` 處理玩家目前所在的完整已標記結構群組；計畫包含刪除或超過批次門檻時需要確認。 |
+| `/cr reset here biome [--confirm]` | 玩家 | 視重置計畫 | 偵測目前連續生態域，並依 `reset-strategy` 處理其既有、未受領地保護的區塊；計畫包含刪除或超過批次門檻時需要確認。 |
 | `/cr reset chunk <world> <cx> <cz> [--confirm]` | 任意 | 是 | 依策略處理指定區塊。 |
 | `/cr reset all chunks\|structures\|all [--confirm]` | 任意 | 是 | 規劃並處理批次目標。 |
 
@@ -95,7 +98,7 @@ description: ChunkRevive 的完整命令語法、執行者限制、確認方式�
 
 | 語法 | 執行者 | 權限 | 說明 |
 | --- | --- | --- | --- |
-| `/cr struct` | 任意 | keep | 顯示結構命令。 |
+| `/cr struct` | 任意 | keep | 顯示結構指令。 |
 | `/cr struct check` | 玩家 | keep | 檢查附近結構保護狀態。 |
 | `/cr struct list [page]` | 任意 | keep | 列出已偵測群組。 |
 | `/cr struct regen <groupId>` | 任意 | admin | 強制刷新群組。 |

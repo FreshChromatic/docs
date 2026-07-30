@@ -32,7 +32,7 @@ reset-strategy:
 
 ## 為什麼預設推薦 Delete 與 Prune
 
-Delete/Prune 負責安全移除舊資料，再把重新生成交回伺服器。Regen 則需要 ChunkRevive 透過版本專用 NMS 立即重演世界生成、序列化、寫盤和 live chunk 更新。
+Delete/Prune 負責安全移除舊資料，再把重生交回伺服器。Regen 則需要 ChunkRevive 透過版本專用 NMS 立即重演世界生成、序列化、寫盤和 live chunk 更新。
 
 因此，大量且可以等待卸載的目標通常優先使用 Delete/Prune：
 
