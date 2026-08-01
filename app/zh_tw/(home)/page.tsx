@@ -1,7 +1,7 @@
-import { ChunkReviveLanding } from '@/components/chunkrevive-landing';
+import { redirect } from 'next/navigation';
 
 export { metadata } from '../../(home)/page';
 
 export default function TraditionalChineseHomePage() {
-  return <ChunkReviveLanding basePath="/zh_tw" />;
+  redirect('/zh_tw/chunkrevive/getting-started');
 }

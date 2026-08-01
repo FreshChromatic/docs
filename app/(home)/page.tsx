@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ChunkReviveLanding } from '@/components/chunkrevive-landing';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'ChunkRevive',
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  return <ChunkReviveLanding basePath="/zh_tw" />;
+  redirect('/zh_tw/chunkrevive/getting-started');
 }
