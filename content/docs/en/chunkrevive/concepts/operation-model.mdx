@@ -30,9 +30,16 @@ reset-strategy:
 
 ## Why Delete and Prune are usually preferred
 
-They safely remove old data and let the server regenerate it through its normal unloaded-chunk flow. Regen must replay version-specific world generation, serialization, disk writes, and live updates.
+Delete/Prune safely remove old data and then hand regeneration back to the server. Regen requires ChunkRevive to replay version-specific NMS world generation, serialization, disk writes, and live chunk updates.
 
-For large targets that can wait, Delete/Prune normally use less CPU and heap, wait for players and holders to leave, and avoid live entity, lighting, biome, and neighbour updates. Delete frees reusable `.mca` sectors; Prune can shrink a complete region to its 8 KiB header.
+Large targets that can wait for unloading usually favour Delete/Prune:
+
+1. They do not need a complete ProtoChunk graph and generation halo, so they usually use less CPU and JVM heap.
+2. Deletion jobs wait for players to leave, check ChunkHolders, and require targets to remain cold continuously.
+3. Fresh terrain is created through the server's normal ungenerated-chunk path, which is more likely to stay consistent with the current generator.
+4. They avoid online entity removal/recreation, block and biome copying, relighting, and neighbour updates.
+5. Delete frees reusable `.mca` sectors; Prune can truncate a complete region to its 8 KiB header.
+6. Region I/O has less version coupling than complete worldgen context, structure metadata, and blending simulation.
 
 ## Limits to know
 
@@ -44,3 +51,9 @@ For large targets that can wait, Delete/Prune normally use less CPU and heap, wa
 <Callout type="info" title="The same seed does not guarantee historical terrain">
   Delete and Prune use the server's current generation rules. After an upgrade, they generate the terrain that current rules prescribe at those coordinates.
 </Callout>
+
+## Next steps
+
+- Apply the automatic choice: [Reset world data by strategy](../guides/reset-world-data)
+- Clean scattered chunks or complete regions: [Delete chunks and prune regions](../guides/delete-and-prune)
+- Update immediately: [Regenerate one or many chunks](../guides/regenerate-chunks)

@@ -26,7 +26,7 @@ The root command is `/cr`. `<argument>` is required, `[argument]` is optional, a
 
 All commands below require `chunkrevive.admin` unless another permission is stated.
 
-## Mark and unmark
+## Mark
 
 | Command | Sender | Confirmation | Purpose |
 | --- | --- | --- | --- |
@@ -42,13 +42,17 @@ All commands below require `chunkrevive.admin` unless another permission is stat
 | `/cr mark biomefull <world> <biomeIds> [--confirm]` | Any | Depends on scan plan | Scan a world for biomes. |
 | `/cr mark biomeradius <world> <biomeIds> <radius> [x] [z]` | Any | No | Mark matching biomes inside a radius. |
 
+All commands above require `chunkrevive.admin`.
+
+## Unmark
+
 | Command | Sender | Purpose |
 | --- | --- | --- |
 | `/cr unmark here` | Player | Unmark the current chunk. |
 | `/cr unmark chunk <world> <cx> <cz>` | Any | Unmark explicit chunk coordinates. |
 | `/cr unmark follow` | Player | Toggle automatic unmarking while moving. |
 
-## Regen and Reset
+## Regen
 
 | Command | Sender | Confirmation | Purpose |
 | --- | --- | --- | --- |
@@ -57,13 +61,16 @@ All commands below require `chunkrevive.admin` unless another permission is stat
 | `/cr regen here biome [--confirm]` | Player | Depends on size | Detect and regenerate the current contiguous biome. |
 | `/cr regen chunk <world> <cx> <cz>` | Any | No | Immediately regenerate a chunk. |
 | `/cr regen all chunks\|structures\|all [--confirm]` | Any | Above threshold | Batch-regenerate normal marks, structures, or both. |
+
+## Reset
+
 | `/cr reset here [--confirm]` | Player | Yes | Process the current chunk through `reset-strategy`. |
 | `/cr reset here struct [--confirm]` | Player | Depends on plan | Process the current marked structure group. |
 | `/cr reset here biome [--confirm]` | Player | Depends on plan | Process existing unclaimed chunks in the current biome. |
 | `/cr reset chunk <world> <cx> <cz> [--confirm]` | Any | Yes | Process an explicit chunk through the strategy. |
 | `/cr reset all chunks\|structures\|all [--confirm]` | Any | Yes | Plan and process batch targets. |
 
-## Delete and Prune
+## Delete
 
 | Command | Sender | Confirmation | Purpose |
 | --- | --- | --- | --- |
@@ -74,13 +81,16 @@ All commands below require `chunkrevive.admin` unless another permission is stat
 | `/cr delete here struct [--confirm]` | Player | Yes | Delete the current marked structure range. |
 | `/cr delete here biome [--confirm]` | Player | Yes | Delete existing complete chunks in the current biome. |
 | `/cr delete marked [world] [--confirm]` | Any | Yes | Delete marks in one or all worlds. |
+
+## Prune
+
 | `/cr prune empty <world> [--confirm]` | Any | Yes | Shrink index-empty region files. |
 | `/cr prune region here [--confirm]` | Player | Yes | Prune the current 32×32 region. |
 | `/cr prune region <world> <rx> <rz> [--confirm]` | Any | Yes | Prune explicit region coordinates. |
 | `/cr prune region chunk <world> <cx> <cz> [--confirm]` | Any | Yes | Prune the region containing a chunk. |
 | `/cr prune region all [--confirm]` | Any | Yes | Prune all complete marked regions that pass protection checks. |
 
-## Structures and tuning
+## Structures
 
 `/cr structure` is an alias of `/cr struct`.
 
@@ -89,10 +99,20 @@ All commands below require `chunkrevive.admin` unless another permission is stat
 | `/cr struct` | keep | Show structure commands. |
 | `/cr struct check` | keep, player | Check nearby protection status. |
 | `/cr struct list [page]` | keep | List detected groups. |
-| `/cr struct regen\|block\|unblock\|reset <groupId>` | admin | Refresh, lock, unlock, or reset a group. |
+| `/cr struct regen <groupId>` | admin | Force-refresh a group. |
+| `/cr struct block <groupId>` | admin | Manually lock a group. |
+| `/cr struct unblock <groupId>` | admin | Unlock a group. |
+| `/cr struct reset <groupId>` | admin | Reset a group's protection state and timer. |
 | `/cr struct resetall [--confirm]` | admin | Reset all group states and timers. |
-| `/cr tune` | admin | Show the hardware snapshot and tuning entry point. |
-| `/cr tune preview <optimized\|balanced\|performance>` | admin | Preview profile changes. |
-| `/cr tune apply <profile> [--confirm]` | admin | Back up and write configuration while Regen/scans are idle. |
 
-`/keep`, `/keepchunk`, and `/chunkkeep` require `chunkrevive.keep`. They only query nearby structure protection progress; they do not mark, lock, or unmark chunks.
+## Tuning
+
+| Command | Purpose |
+| --- | --- |
+| `/cr tune` | Show the hardware snapshot and tuning entry point. |
+| `/cr tune preview <optimized\|balanced\|performance>` | Preview profile changes. |
+| `/cr tune apply <profile> [--confirm]` | Back up and write configuration while Regen/scans are idle. |
+
+## Player query aliases
+
+`/keep`, `/keepchunk`, and `/chunkkeep` require `chunkrevive.keep`. They only query nearby structure protection progress; they do not directly mark, lock, or unmark chunks.

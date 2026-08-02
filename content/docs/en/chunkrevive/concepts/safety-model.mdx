@@ -16,15 +16,27 @@ worlds:
     - resource_world
 ```
 
-## Confirmation and claims
+## Confirmation
 
 Bulk regeneration, Reset, Delete, Prune, and large clearing operations show a plan first and require `--confirm` within `safety.confirm-timeout-seconds`. Confirmation belongs to the current plan; do not save old confirmation commands in routine scripts.
 
+## Residence
+
 With Residence installed, claimed targets are excluded. A deletion job checks again immediately before region I/O because claims can change while it waits.
 
-## Structures, players, and holders
+## Structure protection
 
-Protected structure groups prevent a complete region from being pruned. Delete/Prune also expand checks by the player-safety padding, require no nearby player or Moonrise ChunkHolder, observe two consecutive cold checks, then recheck holders and Residence before writing.
+ChunkRevive tracks structure groups and their protection state. A complete region that contains a protected structure cannot be considered a safe Prune target.
+
+## Players and ChunkHolders
+
+Delete/Prune do not immediately clear chunks in use. A job:
+
+1. Expands its check by the player-safety padding.
+2. Verifies that no player is nearby.
+3. Verifies that Moonrise ChunkHolder no longer holds the target.
+4. Observes the target cold on two consecutive checks.
+5. Rechecks holders and Residence immediately before execution.
 
 ## Backups are still required
 

@@ -3,10 +3,40 @@ title: Getting started
 description: Learn ChunkRevive and safely begin your first terrain-reset operation.
 ---
 
-Start with a backup and a small test area. ChunkRevive lets you select explored terrain and then regenerate it immediately or reset it through the configured deletion strategy.
+<img
+  src="https://cdn.modrinth.com/data/cached_images/ec9e3a4f43f54676a7eecf4945e1e60edc283f34_0.webp"
+  alt="ChunkRevive"
+/>
+
+ChunkRevive is a terrain lifecycle-management plugin for long-running servers. It helps staff identify terrain that has already been explored, mark exactly what should be processed, and regenerate or remove it.
+
+Use it to keep resource worlds, exploration zones, and renewable structures fresh while preserving areas with player activity, protected land, and the parts of the world you intentionally want to keep.
+
+ChunkRevive is also commonly used after world updates, making it easy to generate newly introduced terrain without manually locating and deleting region files.
+
+## Features
+
+- Mark and unmark individual chunks, chunks you walk through, coordinate targets, or a chosen radius.
+- Scan already-generated terrain directly from region files—ideal for full worlds and large resource worlds.
+- Target biome areas using configurable biome matching, including full-world and radius-based biome scans.
+- Not just chunk regeneration—also delete selected chunks or safely prune eligible complete Anvil regions.
+- Track structures automatically, refresh them on a schedule, and expand protection to their full footprint.
+- Let players check nearby tracked-structure protection progress with `/keep`, `/keepchunk`, or `/chunkkeep`.
+- Respect configured world allow/deny rules and optionally integrate with claims managed by third-party land-protection plugins.
+
+## How It Works
+
+1. **Discover** existing terrain with manual marking, radius/biome scans, full-world scans, or automatic structure detection.
+2. **Review** marked chunks using in-game displays, status commands, and structure information.
+3. **Revive** selected terrain with safe regeneration, or use the configured reset strategy to delete individual chunks or complete Anvil regions when it is safe to do so.
+4. **Protect** what matters. World allow/deny rules, third-party land-protection plugin integration, structure tracking, confirmation flags, work-tile limits, and heap-aware throttling are applied throughout the workflow.
+
+<Callout type="warn" title="Back up first and test a small area">
+  Regeneration and deletion are powerful operations. For first use, test in a resource world or world copy, mark only chunks you are certain should change, and review status and confirmation prompts before execution.
+</Callout>
 
 <Cards>
-  <Card title="First operation" href="./basic-tutorial">Learn the essential commands and run a safe first reset.</Card>
-  <Card title="Guides" href="../guides">Choose workflows for marking, regeneration, reset, deletion, and structures.</Card>
-  <Card title="Command reference" href="../features/commands">Review syntax, confirmations, and permissions.</Card>
+  <Card title="Installation and first operation" href="./basic-tutorial">Install the required plugins and complete a safe chunk-marking and regeneration operation.</Card>
+  <Card title="Task-based workflows" href="../guides">See complete workflows for marking, regeneration, reset, deletion, and structure protection.</Card>
+  <Card title="Commands and permissions" href="../features/commands">Review complete command syntax, confirmations, and permission requirements.</Card>
 </Cards>

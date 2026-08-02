@@ -3,7 +3,7 @@ title: First steps
 description: A quick guide for first-time ChunkRevive users.
 ---
 
-## Essential commands
+### Commands
 
 | Command | Purpose |
 | --- | --- |
@@ -16,15 +16,15 @@ description: A quick guide for first-time ChunkRevive users.
 
 See the full [command reference](../../features/commands).
 
-## Reset your first chunk
+### Regenerate your first chunk
 
-Use `F3+G` to see chunk borders, stand in the intended chunk, then run:
+Choose a chunk (use `F3+G` in-game to view current chunk borders), then run:
 
 ```text
 /cr reset here
 ```
 
-Follow the confirmation prompt. For delete-based reset plans, move well away from the target (or leave the server) and wait for the chunk to become cold. When it is loaded again, the server generates fresh terrain.
+Then move more than ten chunks away or leave the server and wait for a while. When you enter again, the chunk will have been regenerated.
 
 To process the current structure or biome instead:
 
@@ -33,7 +33,7 @@ To process the current structure or biome instead:
 | `/cr reset here struct` | Reset the current structure. |
 | `/cr reset here biome` | Reset the current biome region. |
 
-## Mark your first chunk
+### Mark your first chunk
 
 ```text
 /cr mark here
@@ -50,7 +50,7 @@ For the current structure or biome:
   `/cr mark follow` toggles automatic marking of chunks you walk through. `/cr unmark follow` similarly toggles automatic unmarking.
 </Callout>
 
-## Reset every world
+### Regenerate all worlds, including the Overworld, Nether, End, and other worlds
 
 First mark generated chunks in every world:
 
@@ -64,4 +64,4 @@ After the scan completes, review the plan and run:
 /cr reset all all
 ```
 
-Use this only after testing on a copy and confirming that your world policy allows every target world.
+This regenerates every world on the server.

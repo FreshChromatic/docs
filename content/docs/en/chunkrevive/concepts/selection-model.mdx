@@ -5,6 +5,8 @@ description: Understand ChunkRevive target selection and coordinate units.
 
 ChunkRevive first builds a target set, then regenerates, resets, or deletes that set. Marking does not modify terrain immediately.
 
+## Selection methods
+
 | Method | Best for | Main command |
 | --- | --- | --- |
 | Current chunk | A one-point test | `/cr mark here` |
@@ -15,7 +17,7 @@ ChunkRevive first builds a target set, then regenerates, resets, or deletes that
 | Biome | A biome ID or current contiguous biome | `biomefull`, `biomeradius`, `here biome` |
 | Structure | A detected complete structure group | `/cr struct ...` |
 
-## Coordinate units
+## Three coordinate systems
 
 | Parameter | Unit |
 | --- | --- |
@@ -25,8 +27,16 @@ ChunkRevive first builds a target set, then regenerates, resets, or deletes that
 
 A chunk is 16×16 blocks. An Anvil region is 32×32 chunks, or 1,024 positions.
 
-## Existing chunks and complete regions
+## Existing chunks
 
 Disk scans use `scan.min-persisted-status` to decide which chunks are fully written; the default `FULL` avoids selecting incomplete generation states.
 
-Prune requires exactly the same region's 1,024 positions, with none missing or duplicated, and no Residence claim or protected structure. Otherwise the reset strategy falls back to Delete Chunk or Regen; it never truncates the entire region.
+## Complete regions
+
+Prune is not enabled merely because a selection is “almost full”. The Reset planner requires:
+
+- Exactly the 1,024 positions of one region.
+- No missing or duplicate positions.
+- No Residence claim or protected structure blocking it.
+
+If that test fails, the strategy uses Delete Chunk or Regen instead; it does not truncate the entire region.

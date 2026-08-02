@@ -3,7 +3,19 @@ title: Configuration
 description: The ChunkRevive configuration layout and settings reference.
 ---
 
-ChunkRevive stores its configuration under `plugins/ChunkRevive`.
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+## File structure
+
+<Files>
+  <Folder name="plugins" defaultOpen>
+    <Folder name="ChunkRevive" defaultOpen>
+      <File name="config.yml" />
+      <File name="chunkrevive.db" />
+      <File name="messages.yml" />
+    </Folder>
+  </Folder>
+</Files>
 
 | File | Purpose |
 | --- | --- |
@@ -11,7 +23,9 @@ ChunkRevive stores its configuration under `plugins/ChunkRevive`.
 | `chunkrevive.db` | SQLite database (when SQLite is selected). |
 | `messages.yml` | Language messages. |
 
-Reload configuration with `/cr reload` only when no regeneration, scan, or deletion job is active. Back up `config.yml` before editing it.
+## Configuration example
+
+The following reference documents every setting in the default `config.yml`. Reload configuration with `/cr reload` only when no regeneration, scan, or deletion job is active. Back up `config.yml` before editing it.
 
 ## Database
 
