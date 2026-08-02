@@ -1,0 +1,40 @@
+---
+title: Detect, protect, and refresh structures
+description: Use structure groups to avoid cutting through or overwriting important structures during batch maintenance.
+---
+
+ChunkRevive records each detected structure range as a group. Players can inspect groups; administrators can control their refresh and protection state.
+
+## Inspect nearby structures
+
+```text
+/cr struct check
+/cr struct list [page]
+```
+
+`/keep`, `/keepchunk`, and `/chunkkeep` also show nearby passive-protection progress. They do not create a permanent protection entry or modify marks.
+
+## Manage a group
+
+```text
+/cr struct block <groupId>
+/cr struct unblock <groupId>
+/cr struct reset <groupId>
+/cr struct regen <groupId>
+```
+
+- `block` locks the group manually.
+- `unblock` removes its protection state.
+- `reset` clears protection state and its refresh timer.
+- `regen` forces a refresh of the group.
+
+A forced refresh can be rejected if a third-party claim overlaps the structure range.
+
+## Clear tracked state
+
+```text
+/cr struct resetall
+/cr struct resetall --confirm
+```
+
+This resets every structure group and timer; it is not a routine first troubleshooting step.

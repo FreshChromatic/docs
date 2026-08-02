@@ -1,0 +1,204 @@
+---
+title: Configuration
+description: The ChunkRevive configuration layout and settings reference.
+---
+
+ChunkRevive stores its configuration under `plugins/ChunkRevive`.
+
+| File | Purpose |
+| --- | --- |
+| `config.yml` | Plugin configuration. |
+| `chunkrevive.db` | SQLite database (when SQLite is selected). |
+| `messages.yml` | Language messages. |
+
+Reload configuration with `/cr reload` only when no regeneration, scan, or deletion job is active. Back up `config.yml` before editing it.
+
+## Database
+
+```yaml
+database:
+  type: sqlite # sqlite or mysql
+  sqlite:
+    file: chunkrevive.db
+  mysql:
+    host: localhost
+    port: 3306
+    database: chunkrevive
+    username: root
+    password: ''
+```
+
+## Regeneration
+
+```yaml
+regen:
+  batch-delay-ticks: 10
+  batch-concurrency: 1
+  auto-unmark-after-regen: true
+  max-chunks-per-batch: 0
+  work-tile-size: 128
+  work-tile-mode: LOGICAL # LOGICAL or MCA
+  fixed-work-tile-size: false
+  work-tile-span: 16
+  context-radius: 2
+  apply-batch-size: 8
+  thread-pool:
+    parallelism: AUTO
+    priority: 5
+    daemon: true
+    async-mode: false
+  memory-safety:
+    enabled: true
+    max-active-batches: AUTO
+    max-chunks-per-batch: CONFIG
+    max-generation-threads: AUTO
+    heap-high-watermark-percent: 85
+```
+
+`batch-delay-ticks` spaces batch starts; 20 ticks equal one second. `batch-concurrency` is the number of batches that may generate at once. `auto-unmark-after-regen` removes completed marks.
+
+`max-chunks-per-batch` is an optional extra cap for logical neighbouring groups (`0` means no extra cap). `work-tile-size` is always enforced and caps targets held by a single work tile; with a 4 GiB heap, `128` is recommended. A tile regenerates a complete, deterministic feature halo, so trees, ores, and structure decoration remain continuous across tile boundaries.
+
+`work-tile-mode: LOGICAL` preserves existing structure, biome, and neighbour groups. `MCA` groups targets by their 32×32 Anvil-region coordinate first, improving I/O locality for world-scale jobs. `fixed-work-tile-size` balances partitions instead of filling tiles to the limit and leaving a very small final partition. `work-tile-span` is the fixed spatial-grid width/height in chunks and is ignored in MCA mode.
+
+`context-radius` loads surrounding generation context. Do not set it below `2`: some structures, such as ancient cities, need at least that radius during feature decoration. A smaller value reduces I/O and DFU work but can slightly cut off caves or ravines near a target boundary.
+
+`apply-batch-size` limits immediate live-apply steps per server tick. Lower values spread work across more ticks and reduce long Folia region-tick stalls, but take longer overall.
+
+`thread-pool.parallelism` accepts `AUTO` (logical processors minus one, minimum two), `MAX`, `HALF`, or a number from 1 through 256. `priority` is 1–10, with `5` as normal priority. Keep `daemon: true` so server shutdown is not blocked. `async-mode: false` uses LIFO scheduling; `true` uses FIFO, which better suits independent queued work.
+
+Memory safety limits active batches, an additional target cap, generation threads, and the heap high-water mark. Each limit accepts `AUTO`, `CONFIG`, `IGNORE`, or a positive number; legacy `0` means `AUTO`. At or above `heap-high-watermark-percent` of `-Xmx`, new batches stop starting while active batches finish.
+
+## Reset strategy
+
+```yaml
+reset-strategy:
+  default-method: DELETE_CHUNK
+  eligible-region-method: DELETE_REGION
+  incomplete-region-method: DEFAULT
+```
+
+`default-method` accepts `REGENERATE`, `DELETE_CHUNK`, or `DELETE_REGION`. `eligible-region-method` also accepts `DEFAULT` and applies when all 1,024 chunks of an Anvil region are selected with no Residence claim or protected structure. `incomplete-region-method` accepts `DEFAULT`, `REGENERATE`, or `DELETE_CHUNK`; `DELETE_REGION` is never allowed here and safely falls back to Regen.
+
+## Deletion
+
+```yaml
+deletion:
+  check-interval-ticks: 20
+  progress-report-chunks: 10000
+  progress-report-regions: 100
+  region-batches-per-cycle: 4
+  chunks-per-region-batch: 256
+  resume-on-startup: true
+  player-safety-padding-chunks: 12
+  force-region-file-to-disk: true
+  auto-unmark-after-delete: true
+```
+
+`check-interval-ticks` controls how often waiting jobs are tested for cold targets. The progress settings consolidate completion messages. `region-batches-per-cycle` is clamped to 1–64; `chunks-per-region-batch` is the main deletion I/O throttle and is clamped to 1–1,024. Keep `resume-on-startup` enabled to recover unfinished work. The safety padding requires surrounding chunks to be unloaded, and `force-region-file-to-disk` fsyncs the empty 8 KiB header after online truncation. `auto-unmark-after-delete` removes successful targets.
+
+## Mark display
+
+```yaml
+display:
+  enabled: true
+  render-radius-chunks: 4
+  max-visible-chunks: 20
+  y-offset-from-eye: 0.5
+  y-update-threshold: 0.0
+  update-interval-ticks: 1
+```
+
+This TextDisplay-based marker feature requires PacketEvents. It controls the visible range and cap per player, display height relative to eye level, minimum Y movement before an update, and the update interval.
+
+## Structures
+
+```yaml
+structure:
+  enabled: true
+  detect:
+    auto-detect-on-walk: true
+    notify-player-on-detect: false
+    scan-radius-chunks: 0
+  mark:
+    expand-to-full-structure: true
+  refresh:
+    enabled: true
+    list-mode: WHITELIST # WHITELIST or BLACKLIST
+    default-interval-days: 7
+    tracked-structures:
+      minecraft:trial_chambers: 10
+      minecraft:village: 7
+      minecraft:bastion_remnant: 14
+      minecraft:ancient_city: 14
+      minecraft:fortress: 14
+    check-interval-ticks: 6000
+  residence:
+    on-partial-claim: EXCLUDE_CLAIMED
+  protection:
+    radius-chunks: 3
+    required-ticks: 288000
+    flush-interval-ticks: 200
+    reset-on-leave: false
+  entity-exemptions:
+    keep-ridden: true
+    keep-leashed: true
+    keep-allay-attracted: true
+    keep-tamed-pets: true
+    tamed-pet-owner-radius: 32.0
+  regen:
+    regen-full-structure-range: true
+```
+
+The top-level switch disables all structure detection, scheduling, and operation blocking. Detection can register nearby structures as a player walks; `scan-radius-chunks: 0` checks only the current chunk. Marking can expand to a structure's full bounding box.
+
+In `WHITELIST` refresh mode, `tracked-structures` maps structure IDs to refresh days. In `BLACKLIST` mode, it is an exclusion list and all other structures use `default-interval-days`. The partial Residence policy is `EXCLUDE_CLAIMED`, `ABORT_WHOLE`, or `IGNORE_CLAIMS`.
+
+Players accumulate protection only inside `radius-chunks`; `required-ticks` defaults to four hours. Progress flushes every `flush-interval-ticks`, and `reset-on-leave` chooses reset versus pause. Entity exemptions preserve ridden, leashed, allay-attracted, and tamed entities. Structure ranges can regenerate as one batch with `regen-full-structure-range`.
+
+## World policy and scans
+
+```yaml
+worlds:
+  mode: BLACKLIST # WHITELIST or BLACKLIST
+  list: []
+  scope:
+    manual-mark: true
+    bulk-mark: true
+    structure-auto-detect: true
+    structure-refresh: true
+    regen: true
+scan:
+  min-persisted-status: FULL
+  check-residence-claims: true
+  radiusmark-max-radius-chunks: 512
+  allow-concurrent-with-regen: false
+  thread-pool:
+    parallelism: 4
+    priority: 3
+    daemon: true
+```
+
+`WHITELIST` permits only listed worlds; `BLACKLIST` (the default) permits everything except listed worlds. An empty list in blacklist mode changes nothing. The scope switches apply the world policy to manual marks, scans, automatic detection, periodic structure refreshes, and regen commands independently.
+
+Only chunks at or above `min-persisted-status` count as existing in full/radius scans. Valid values are `NOISE`, `BIOMES`, `STRUCTURE_STARTS`, `STRUCTURE_REFERENCES`, `SURFACE`, `CARVERS`, `FEATURES`, `LIGHT`, `SPAWN`, and `FULL`. The scan thread pool opens region files directly and reads only status and tracked structure starts, so tune its real parallel I/O for your disk: lower for HDD, higher for SSD/NVMe.
+
+## Biomes and safety
+
+```yaml
+biome:
+  match-mode: CENTER # CENTER or ANY_OF_16
+  heightmap-type: WORLD_SURFACE
+  biomeradius-max-radius-chunks: 512
+  regen:
+    regen-full-biome-range: true
+    flood-fill-max-chunks: 4096
+safety:
+  confirm-timeout-seconds: 30
+  bulk-regen-confirm-threshold-chunks: 50
+enable-debug-logs: false
+```
+
+`CENTER` samples the central column of a chunk and is fastest. `ANY_OF_16` samples all 4×4 quart columns and matches if any column qualifies, at 16× the cost. `heightmap-type` accepts `WORLD_SURFACE`, `OCEAN_FLOOR`, or `MOTION_BLOCKING`; underground-only biomes such as deep dark and lush caves cannot be matched.
+
+`regen-full-biome-range` treats a contiguous matching biome range as one indivisible batch. `flood-fill-max-chunks` stops `here biome` detection early for extremely large regions and reports the result as truncated. Safety settings set the plan-confirmation lifetime and the threshold above which `regen all` needs confirmation. Enable debug logs only while diagnosing structure, generation, or deletion behaviour.

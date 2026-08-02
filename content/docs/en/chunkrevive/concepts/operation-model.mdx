@@ -1,0 +1,46 @@
+---
+title: Regen, Reset, Delete, and Prune
+description: Responsibilities, use cases, and default selection rules for the four world-maintenance operations.
+---
+
+The four names describe different levels of work. `Reset` is a strategy entry point; the other three are processing methods.
+
+| Operation | What it does | Best for |
+| --- | --- | --- |
+| **Regen** | Immediately builds ProtoChunks, runs world generation, writes NBT, and updates loaded chunks. | You must see the new result now. |
+| **Reset** | Plans Regen, Delete, or Prune from `reset-strategy`, target shape, and protection checks. | A mixed batch where the plugin should choose. |
+| **Delete** | Waits for chunks to stay cold, then removes terrain, entity, and POI data. | Scattered or incomplete regions that can generate later. |
+| **Prune** | Clears all 1,024 chunks in a complete 32×32 region and truncates its files after verifying emptiness. | A complete, safe region where disk space should be reclaimed. |
+
+## Default choice
+
+```text
+Complete, safe region → Prune
+Incomplete or scattered targets → Delete
+Immediate online update required → Regen
+Let configuration choose → Reset
+```
+
+```yaml
+reset-strategy:
+  default-method: DELETE_CHUNK
+  eligible-region-method: DELETE_REGION
+  incomplete-region-method: DEFAULT
+```
+
+## Why Delete and Prune are usually preferred
+
+They safely remove old data and let the server regenerate it through its normal unloaded-chunk flow. Regen must replay version-specific world generation, serialization, disk writes, and live updates.
+
+For large targets that can wait, Delete/Prune normally use less CPU and heap, wait for players and holders to leave, and avoid live entity, lighting, biome, and neighbour updates. Delete frees reusable `.mca` sectors; Prune can shrink a complete region to its 8 KiB header.
+
+## Limits to know
+
+- Delete normally does not shrink an `.mca` file immediately.
+- Prune only applies to complete regions that pass claim and structure checks.
+- Changes to versions, datapacks, generators, or generation settings can change the resulting terrain.
+- Regen is not inferior: it provides the immediate online update Delete and Prune cannot.
+
+<Callout type="info" title="The same seed does not guarantee historical terrain">
+  Delete and Prune use the server's current generation rules. After an upgrade, they generate the terrain that current rules prescribe at those coordinates.
+</Callout>

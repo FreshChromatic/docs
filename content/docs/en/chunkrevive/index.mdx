@@ -1,6 +1,37 @@
 ---
 title: ChunkRevive
-description: English documentation is not available yet.
+description: Regenerate, reset, and clean up Minecraft world data safely.
 ---
 
-English documentation for ChunkRevive is not available yet.
+<img src="https://cdn.modrinth.com/data/cached_images/ec9e3a4f43f54676a7eecf4945e1e60edc283f34_0.webp" alt="ChunkRevive" />
+
+ChunkRevive is a terrain-lifecycle plugin for long-running servers. It finds explored terrain, precisely marks the chunks to process, and regenerates or removes them.
+
+It is particularly useful for resource worlds, exploration areas, and renewable structures: keep player areas, protected claims, and the parts of the world you want to preserve while refreshing terrain and resources. After a world update, it can generate terrain from the new version without manually locating and deleting region files.
+
+## Highlights
+
+- Mark one chunk, chunks travelled through, explicit coordinates, or a radius.
+- Scan generated terrain directly from region files, including entire worlds.
+- Select biomes across a world or within a radius using configurable matching rules.
+- Regenerate selected chunks, delete them, or prune complete safe Anvil regions.
+- Track structures, schedule refreshes, and protect their full footprint.
+- Let players check nearby structure-protection progress with `/keep`, `/keepchunk`, or `/chunkkeep`.
+- Apply world allow/deny rules and integrate with third-party claim protection.
+
+## How it works
+
+1. **Find targets:** Build a set with manual marking, radius/biome scans, a world scan, or automatic structure detection.
+2. **Review targets:** Verify marks with in-game displays, status commands, and structure information.
+3. **Reset terrain:** Safely regenerate targets, or let the configured strategy delete chunks or complete Anvil regions.
+4. **Protect important data:** World rules, claim integration, structure tracking, confirmation flags, work-tile limits, and heap throttling apply throughout the workflow.
+
+<Callout type="warn" title="Back up first and test a small area">
+  Regeneration and deletion are powerful operations. Test in a resource world or world copy first, mark only chunks you intend to change, and review status and confirmation prompts before running a job.
+</Callout>
+
+<Cards>
+  <Card title="Install and run your first job" href="./getting-started">Install the required plugins and complete a safe mark-and-regenerate operation.</Card>
+  <Card title="Task-based guides" href="./guides">Follow complete workflows for marking, regeneration, reset, deletion, and structure protection.</Card>
+  <Card title="Commands and permissions" href="./features/commands">See command syntax, confirmations, and permission requirements.</Card>
+</Cards>

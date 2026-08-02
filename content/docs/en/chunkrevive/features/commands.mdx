@@ -1,0 +1,98 @@
+---
+title: Commands and permissions
+description: Complete ChunkRevive command syntax, sender restrictions, confirmation behaviour, and permissions.
+---
+
+The root command is `/cr`. `<argument>` is required, `[argument]` is optional, and `A|B` means choose one. Player-only commands cannot be run from the console.
+
+## Permissions
+
+| Permission | Default | Scope | Recommended grant |
+| --- | --- | --- | --- |
+| `chunkrevive.admin` | OP | Administration, marking, scans, regeneration, reset, delete, prune, tuning, and management structure commands. | Trusted administrators or controlled automation only. |
+| `chunkrevive.keep` | Everyone | Structure queries and `/keep`, `/keepchunk`, `/chunkkeep`. | Players who should inspect nearby structure protection progress. |
+
+## Help and status
+
+| Command | Sender | Purpose |
+| --- | --- | --- |
+| `/cr` | Any | Show the command index. |
+| `/cr help [query]` | Any | Search in-game help. |
+| `/cr status [page]` | Any | Show Regen, scan, deletion, and server-job status. |
+| `/cr server` | Any | Show hardware, JVM, version, and database status. |
+| `/cr server regions [world]` | Any | Count regions in the named or current world. |
+| `/cr cancel` | Any | Cancel cancellable Regen, scan, or waiting deletion jobs. |
+| `/cr reload` | Any | Reload configuration and messages. |
+
+All commands below require `chunkrevive.admin` unless another permission is stated.
+
+## Mark and unmark
+
+| Command | Sender | Confirmation | Purpose |
+| --- | --- | --- | --- |
+| `/cr mark here` | Player | No | Mark the current chunk. |
+| `/cr mark here struct` | Player | No | Detect, register, and mark the nearby tracked structure. |
+| `/cr mark here biome` | Player | Depends on target | Mark existing chunks in the current contiguous biome. |
+| `/cr mark chunk <world> <cx> <cz>` | Any | No | Mark explicit chunk coordinates. |
+| `/cr mark follow` | Player | No | Toggle automatic marking while moving. |
+| `/cr mark list [page]` | Any | No | List manual marks. |
+| `/cr mark resetmark <world> [--confirm]` | Any | Yes | Clear a world's marks. |
+| `/cr mark fullmark <world\|all> [--confirm]` | Any | Depends on scan plan | Scan and mark persisted chunks. |
+| `/cr mark radius <world> <radius> [x] [z]` | Any | No | Mark existing chunks inside a block-coordinate radius. |
+| `/cr mark biomefull <world> <biomeIds> [--confirm]` | Any | Depends on scan plan | Scan a world for biomes. |
+| `/cr mark biomeradius <world> <biomeIds> <radius> [x] [z]` | Any | No | Mark matching biomes inside a radius. |
+
+| Command | Sender | Purpose |
+| --- | --- | --- |
+| `/cr unmark here` | Player | Unmark the current chunk. |
+| `/cr unmark chunk <world> <cx> <cz>` | Any | Unmark explicit chunk coordinates. |
+| `/cr unmark follow` | Player | Toggle automatic unmarking while moving. |
+
+## Regen and Reset
+
+| Command | Sender | Confirmation | Purpose |
+| --- | --- | --- | --- |
+| `/cr regen here` | Player | No | Immediately regenerate the current chunk. |
+| `/cr regen here struct [--confirm]` | Player | Depends on size | Regenerate the current structure group. |
+| `/cr regen here biome [--confirm]` | Player | Depends on size | Detect and regenerate the current contiguous biome. |
+| `/cr regen chunk <world> <cx> <cz>` | Any | No | Immediately regenerate a chunk. |
+| `/cr regen all chunks\|structures\|all [--confirm]` | Any | Above threshold | Batch-regenerate normal marks, structures, or both. |
+| `/cr reset here [--confirm]` | Player | Yes | Process the current chunk through `reset-strategy`. |
+| `/cr reset here struct [--confirm]` | Player | Depends on plan | Process the current marked structure group. |
+| `/cr reset here biome [--confirm]` | Player | Depends on plan | Process existing unclaimed chunks in the current biome. |
+| `/cr reset chunk <world> <cx> <cz> [--confirm]` | Any | Yes | Process an explicit chunk through the strategy. |
+| `/cr reset all chunks\|structures\|all [--confirm]` | Any | Yes | Plan and process batch targets. |
+
+## Delete and Prune
+
+| Command | Sender | Confirmation | Purpose |
+| --- | --- | --- | --- |
+| `/cr delete chunk here` | Player | Single-target flow | Schedule deletion of the current chunk. |
+| `/cr delete chunk <world> <cx> <cz>` | Any | Single-target flow | Schedule deletion of a chunk. |
+| `/cr delete chunk all [--confirm]` | Any | Yes | Delete all normal marks. |
+| `/cr delete here [chunk]` | Player | Single-target flow | Delete the current chunk. |
+| `/cr delete here struct [--confirm]` | Player | Yes | Delete the current marked structure range. |
+| `/cr delete here biome [--confirm]` | Player | Yes | Delete existing complete chunks in the current biome. |
+| `/cr delete marked [world] [--confirm]` | Any | Yes | Delete marks in one or all worlds. |
+| `/cr prune empty <world> [--confirm]` | Any | Yes | Shrink index-empty region files. |
+| `/cr prune region here [--confirm]` | Player | Yes | Prune the current 32×32 region. |
+| `/cr prune region <world> <rx> <rz> [--confirm]` | Any | Yes | Prune explicit region coordinates. |
+| `/cr prune region chunk <world> <cx> <cz> [--confirm]` | Any | Yes | Prune the region containing a chunk. |
+| `/cr prune region all [--confirm]` | Any | Yes | Prune all complete marked regions that pass protection checks. |
+
+## Structures and tuning
+
+`/cr structure` is an alias of `/cr struct`.
+
+| Command | Permission | Purpose |
+| --- | --- | --- |
+| `/cr struct` | keep | Show structure commands. |
+| `/cr struct check` | keep, player | Check nearby protection status. |
+| `/cr struct list [page]` | keep | List detected groups. |
+| `/cr struct regen\|block\|unblock\|reset <groupId>` | admin | Refresh, lock, unlock, or reset a group. |
+| `/cr struct resetall [--confirm]` | admin | Reset all group states and timers. |
+| `/cr tune` | admin | Show the hardware snapshot and tuning entry point. |
+| `/cr tune preview <optimized\|balanced\|performance>` | admin | Preview profile changes. |
+| `/cr tune apply <profile> [--confirm]` | admin | Back up and write configuration while Regen/scans are idle. |
+
+`/keep`, `/keepchunk`, and `/chunkkeep` require `chunkrevive.keep`. They only query nearby structure protection progress; they do not mark, lock, or unmark chunks.

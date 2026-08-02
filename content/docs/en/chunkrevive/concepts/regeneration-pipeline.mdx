@@ -1,0 +1,26 @@
+---
+title: Regeneration queue and spatial batches
+description: How Regen builds generation context, controls memory, and updates loaded chunks.
+---
+
+Regen is not a simple call to the official `regenerateChunk` API. ChunkRevive assembles a version-specific NMS world-generation pipeline that can run online.
+
+## Generation stages
+
+```text
+STRUCTURE_STARTS → STRUCTURE_REFERENCES → BIOMES
+→ NOISE → SURFACE → CARVERS → FEATURES
+→ serialization and disk write → live apply
+```
+
+Caves, trees, ore veins, and structures cross chunk borders, so each target set also creates the feature, carver, structure, and blending halo it needs.
+
+## Work tiles and memory
+
+ProtoChunks, palettes, and context remain in memory until writing is complete. `regen.work-tile-size` caps targets held by one spatial work graph. `regen.memory-safety` limits active batches, chunks per batch, generation threads, and the heap high-water mark. At that mark, the queue pauses new jobs while active jobs finish.
+
+## Live apply
+
+For a loaded chunk, writing to disk is not enough. Regen synchronizes entities, block entities, blocks, biomes, heightmaps, lighting, fluid ticks, border-neighbour updates, and client refreshes. `regen.apply-batch-size` limits how much is applied per tick.
+
+That is why Regen suits immediate updates, while large deferrable targets generally suit Delete/Prune.

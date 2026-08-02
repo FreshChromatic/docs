@@ -1,0 +1,44 @@
+---
+title: Delete chunks and prune regions
+description: Remove scattered chunks or complete Anvil regions and let the server regenerate them later.
+---
+
+Delete/Prune wait for targets to unload and remain cold, then change terrain, entity, and POI storage. They do not generate new terrain immediately.
+
+## Delete: scattered or incomplete targets
+
+```text
+/cr delete chunk here
+/cr delete chunk <world> <cx> <cz>
+/cr delete marked [world]
+```
+
+At the player's current position, you can also use:
+
+```text
+/cr delete here
+/cr delete here chunk
+/cr delete here struct
+/cr delete here biome
+```
+
+Structure, biome, and large marked jobs show a plan and require confirmation. Delete frees reusable `.mca` sectors.
+
+## Prune: complete Anvil regions
+
+```text
+/cr prune region here
+/cr prune region <world> <rx> <rz>
+/cr prune region chunk <world> <cx> <cz>
+/cr prune region all
+```
+
+`region chunk` chooses the region containing the chunk; direct region selection uses `rx` and `rz`. A region can be truncated only when all 1,024 positions are removable and no structure is protected.
+
+## Prune already empty regions
+
+```text
+/cr prune empty <world>
+```
+
+This scans index-empty region files and shrinks them after confirmation.

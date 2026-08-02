@@ -1,0 +1,28 @@
+---
+title: Monitor, cancel, and recover jobs
+description: Inspect regeneration, scan, and deletion status and understand waiting reasons.
+---
+
+## Status
+
+```text
+/cr status [page]
+```
+
+Status pages show batch regeneration, world scans, deletion and region cleanup, and current concurrency, completion, and pending counts.
+
+## Cancel
+
+```text
+/cr cancel
+```
+
+This stops cancellable regeneration, scans, or waiting deletion jobs. Work already written to world or region storage is not automatically reversed.
+
+## Waiting to become cold
+
+Waiting deletion jobs check for nearby players, spawn chunks or other plugins holding the chunk, the two cold-check observations, and new Residence claims. Do not repeatedly submit the same command; that does not release holders faster.
+
+## After a restart
+
+`deletion.resume-on-startup` defaults to `true`. Unfinished deletion jobs are restored from the database and cold-checked again. Use `/cr status` after restart rather than assuming a job was cancelled or completed.

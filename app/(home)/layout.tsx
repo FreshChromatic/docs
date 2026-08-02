@@ -8,10 +8,10 @@ export const metadata = siteMetadata;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-Hant" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
-        <Provider locale="zh_tw">
-          <HomeLayout {...baseOptions()}>{children}</HomeLayout>
+        <Provider locale="en">
+          <HomeLayout {...baseOptions('en')}>{children}</HomeLayout>
         </Provider>
       </body>
     </html>

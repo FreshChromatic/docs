@@ -1,0 +1,31 @@
+---
+title: World, claim, and operation safety
+description: Restrictions and protection checks used before ChunkRevive creates and runs jobs.
+---
+
+Safety is layered rather than a single confirmation button.
+
+## World access policy
+
+`worlds.mode` and `worlds.list` choose eligible worlds. `worlds.scope` separately controls manual marking, bulk marking, structure detection, structure refresh, and regeneration.
+
+```yaml
+worlds:
+  mode: WHITELIST
+  list:
+    - resource_world
+```
+
+## Confirmation and claims
+
+Bulk regeneration, Reset, Delete, Prune, and large clearing operations show a plan first and require `--confirm` within `safety.confirm-timeout-seconds`. Confirmation belongs to the current plan; do not save old confirmation commands in routine scripts.
+
+With Residence installed, claimed targets are excluded. A deletion job checks again immediately before region I/O because claims can change while it waits.
+
+## Structures, players, and holders
+
+Protected structure groups prevent a complete region from being pruned. Delete/Prune also expand checks by the player-safety padding, require no nearby player or Moonrise ChunkHolder, observe two consecutive cold checks, then recheck holders and Residence before writing.
+
+## Backups are still required
+
+These checks reduce the chance of removing in-use data; they do not provide recovery. A wrong world, coordinate, mark set, or generation environment still requires a backup to restore.

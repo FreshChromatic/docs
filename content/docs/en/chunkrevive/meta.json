@@ -1,5 +1,7 @@
 {
   "title": "ChunkRevive",
+  "description": "Chunk regeneration, reset, and world cleanup",
+  "icon": "RotateCcw",
   "root": true,
-  "pages": ["index"]
+  "pages": ["getting-started", "features", "guides", "configuration", "integrations"]
 }

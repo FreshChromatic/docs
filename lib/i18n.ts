@@ -3,10 +3,11 @@ import { defineI18nUI } from 'fumadocs-ui/i18n';
 
 export const locales = ['zh_tw', 'en'] as const;
 export type Locale = (typeof locales)[number];
+export const localePreferenceCookie = 'chunkrevive-locale';
 
 export const i18n = defineI18n({
   languages: [...locales],
-  defaultLanguage: 'zh_tw',
+  defaultLanguage: 'en',
   hideLocale: 'never',
   parser: 'dir',
   fallbackLanguage: null,

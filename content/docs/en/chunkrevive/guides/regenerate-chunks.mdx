@@ -1,0 +1,39 @@
+---
+title: Regenerate one or many chunks
+description: Use Regen to generate and apply fresh chunk data immediately.
+---
+
+Use Regen when a target must update now. For large areas that can generate when later loaded, consider [Delete/Prune](./delete-and-prune).
+
+## One chunk
+
+```text
+/cr regen here
+/cr regen chunk <world> <cx> <cz>
+```
+
+## Marked batches
+
+```text
+/cr mark list
+/cr regen all chunks
+/cr regen all chunks --confirm
+```
+
+You can restrict the batch to structures or include both normal chunks and structures:
+
+```text
+/cr regen all structures
+/cr regen all all
+```
+
+Run the command without `--confirm` first and submit the confirmation form only when prompted.
+
+## During and after the job
+
+```text
+/cr status
+/cr cancel
+```
+
+Verify target borders, structures, caves, vegetation, biomes, player/entity and Residence results, and server logs for worldgen, serialization, lighting, or apply errors.

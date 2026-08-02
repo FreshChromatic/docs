@@ -1,0 +1,51 @@
+---
+title: Reset world data by strategy
+description: Use Reset to choose Regen, Delete, or Prune automatically from target shape.
+---
+
+Reset is a strategy entry point, not a fourth low-level deletion format. It builds a plan, then selects a method through `reset-strategy`.
+
+<Callout type="warn" title="Read the plan before confirming">
+  The default Reset plan can create Delete Chunk or Prune jobs. Run without `--confirm` first and review the displayed region, chunk, and Regen counts.
+</Callout>
+
+## One target
+
+```text
+/cr reset here
+/cr reset chunk <world> <cx> <cz>
+```
+
+Review the plan and confirm when prompted.
+
+## Batches
+
+```text
+/cr reset all chunks
+/cr reset all structures
+/cr reset all all
+```
+
+`chunks` is manually marked normal chunks; `structures` is marked structure groups; `all` includes both.
+
+## Default strategy
+
+```yaml
+reset-strategy:
+  default-method: DELETE_CHUNK
+  eligible-region-method: DELETE_REGION
+  incomplete-region-method: DEFAULT
+```
+
+Complete safe regions use Prune. Scattered or incomplete targets inherit `default-method`, which defaults to Delete Chunk.
+
+## Use Regen only
+
+```yaml
+reset-strategy:
+  default-method: REGENERATE
+  eligible-region-method: REGENERATE
+  incomplete-region-method: DEFAULT
+```
+
+Reload only when no job is active, then validate the plan in a copy first.

@@ -1,0 +1,32 @@
+---
+title: Chunks, ranges, biomes, and structures
+description: Understand ChunkRevive target selection and coordinate units.
+---
+
+ChunkRevive first builds a target set, then regenerates, resets, or deletes that set. Marking does not modify terrain immediately.
+
+| Method | Best for | Main command |
+| --- | --- | --- |
+| Current chunk | A one-point test | `/cr mark here` |
+| Explicit chunk | Automation or remote targets | `/cr mark chunk <world> <cx> <cz>` |
+| Follow | Manual selection while walking | `/cr mark follow` |
+| Radius | Existing chunks around a centre | `/cr mark radius ...` |
+| Full-world scan | Existing persisted chunks in one or all worlds | `/cr mark fullmark ...` |
+| Biome | A biome ID or current contiguous biome | `biomefull`, `biomeradius`, `here biome` |
+| Structure | A detected complete structure group | `/cr struct ...` |
+
+## Coordinate units
+
+| Parameter | Unit |
+| --- | --- |
+| `x`, `z` | Block coordinates |
+| `cx`, `cz` | Chunk coordinates |
+| `rx`, `rz` | Anvil region coordinates |
+
+A chunk is 16×16 blocks. An Anvil region is 32×32 chunks, or 1,024 positions.
+
+## Existing chunks and complete regions
+
+Disk scans use `scan.min-persisted-status` to decide which chunks are fully written; the default `FULL` avoids selecting incomplete generation states.
+
+Prune requires exactly the same region's 1,024 positions, with none missing or duplicated, and no Residence claim or protected structure. Otherwise the reset strategy falls back to Delete Chunk or Regen; it never truncates the entire region.

@@ -1,0 +1,33 @@
+---
+title: Select and mark chunks
+description: Build and inspect a target set for regeneration, reset, or deletion.
+---
+
+Marking only adds chunks to ChunkRevive's target set; it does not change terrain immediately.
+
+## One chunk
+
+```text
+/cr mark here
+/cr mark chunk <world> <cx> <cz>
+```
+
+`cx` and `cz` are chunk coordinates. Use `here` when you are unsure of coordinates.
+
+## Mark while moving
+
+```text
+/cr mark follow
+/cr unmark follow
+```
+
+Run either command again to toggle its mode.
+
+## Radius and world scans
+
+```text
+/cr mark radius <world> <radius> [x] [z]
+/cr mark fullmark <world|all>
+```
+
+The radius centre `x` and `z` are block coordinates. Large scans can require `--confirm` and, by default, do not run concurrently with Regen.

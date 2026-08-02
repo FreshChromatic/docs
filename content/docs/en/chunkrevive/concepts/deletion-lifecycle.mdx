@@ -1,0 +1,27 @@
+---
+title: Deletion job lifecycle
+description: How Delete and Prune wait for safe conditions, persist work, and recover after restart.
+---
+
+Delete and Prune create waiting jobs; entering the command does not immediately modify region files.
+
+```text
+Create plan → persist job → wait for players to leave → ChunkHolder check
+→ cold check 1/2 → cold check 2/2 → recheck Residence and holders
+→ region I/O → complete and optionally unmark
+```
+
+## Why a job waits to become cold
+
+Players, other plugins, spawn chunks, or internal server holders may still use the target. This is expected; do not force-load chunks or resubmit the same Delete command.
+
+## Restart recovery
+
+With `deletion.resume-on-startup: true`, unfinished jobs are stored in the database. After restart, they run cold checks again instead of trusting the old safety state.
+
+## Spatial effects
+
+- Delete clears individual chunks and frees reusable `.mca` sectors; file length usually does not change immediately.
+- Prune clears a complete region and, after verifying every position is empty, truncates it to the valid 8 KiB header.
+
+Use `/cr status` to inspect jobs and `/cr cancel` to cancel a waiting job when possible.

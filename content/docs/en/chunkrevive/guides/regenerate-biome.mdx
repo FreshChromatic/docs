@@ -1,0 +1,28 @@
+---
+title: Regenerate a biome
+description: Select and process chunks by biome ID, radius, or the player's current contiguous biome.
+---
+
+## Scan a world by ID
+
+```text
+/cr mark biomefull <world> <biomeIds>
+/cr mark biomefull resource_world minecraft:desert,minecraft:badlands
+```
+
+Use comma-separated biome IDs when the command prompt accepts multiple values.
+
+## Limit to a radius
+
+```text
+/cr mark biomeradius <world> <biomeIds> <radius> [x] [z]
+```
+
+## Use the current biome
+
+```text
+/cr mark here biome
+/cr regen here biome
+```
+
+`regen here biome` detects the contiguous biome, creates the target set, and immediately regenerates it. Large targets require confirmation.

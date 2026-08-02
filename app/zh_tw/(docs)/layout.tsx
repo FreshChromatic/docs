@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             tree={source.getPageTree('zh_tw')}
             tabs={{}}
             tabMode="auto"
-            {...baseOptions()}
+            {...baseOptions('zh_tw')}
           >
             {children}
           </DocsLayout>

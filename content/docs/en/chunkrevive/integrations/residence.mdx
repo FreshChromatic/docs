@@ -1,0 +1,33 @@
+---
+title: Residence
+description: Make ChunkRevive avoid chunks protected by Residence claims during selection, regeneration, and deletion.
+---
+
+## Where claims are checked
+
+ChunkRevive checks claims during manual and batch marking, region and biome scans, Regen/Reset planning, and immediately before Delete/Prune submits region I/O.
+
+When a new claim, expansion, or subzone takes effect, the plugin removes outstanding marks or queued targets inside it.
+
+## Scan policy
+
+```yaml
+scan:
+  check-residence-claims: true
+```
+
+Turning this off affects only whether scans apply claim policy. It does not disable the final Delete/Prune safety check.
+
+## Partial structure overlap
+
+```yaml
+structure:
+  residence:
+    on-partial-claim: EXCLUDE_CLAIMED
+```
+
+| Value | Behaviour |
+| --- | --- |
+| `EXCLUDE_CLAIMED` | Exclude the claimed part. |
+| `ABORT_WHOLE` | Abort the entire structure job on any overlap. |
+| `IGNORE_CLAIMS` | Ignore the partial-overlap policy. |
